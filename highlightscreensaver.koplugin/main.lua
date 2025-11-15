@@ -1,4 +1,5 @@
 -- TODO: reimplement dispatcher integration
+local json = require("json")
 local Dispatcher = require("dispatcher") -- luacheck:ignore
 local InfoMessage = require("ui/widget/infomessage")
 local UIManager = require("ui/uimanager")
@@ -48,29 +49,15 @@ function HighlightScreensaver:scanHighlights()
 end
 
 function HighlightScreensaver:addToScannableDirectories()
-	local path = utils.getPluginDir() .. "/scannable-dirs.json"
-	local fileRead = io.open(path, "r")
-	local contents = fileRead and fileRead:read("*a") or "[]"
-	if fileRead then
-		fileRead:close()
-	end
+	local scannable_dirs = utils.getScannableDirs()
+	local curr_dir = self.ui.file_chooser.path
+	table.insert(scannable_dirs, curr_dir)
 
-	local json = require("json")
-	local dirs = json.decode(contents) or {}
-	local valid_dirs = {}
-	for _, dir in ipairs(dirs) do
-		if lfs.attributes(dir, "mode") == "directory" then
-			table.insert(valid_dirs, dir)
-		end
-	end
-	local currDir = self.ui.file_chooser.path
-	table.insert(valid_dirs, currDir)
-
-	local uniqueDirs = {}
+	local unique_dirs = {}
 	local seen = {}
-	for _, dir in ipairs(valid_dirs) do
+	for _, dir in ipairs(scannable_dirs) do
 		if not seen[dir] then
-			table.insert(uniqueDirs, dir)
+			table.insert(unique_dirs, dir)
 			seen[dir] = true
 		end
 	end
@@ -84,15 +71,15 @@ function HighlightScreensaver:addToScannableDirectories()
 		end
 	end
 
-	local fileWrite, err = io.open(path, "w")
-	if not fileWrite then
+	local file, err = io.open(utils.getScannableDirsFilePath(), "w")
+	if not file then
 		error("Failed to open scannable-dirs file: " .. tostring(err))
 	end
-	fileWrite:write(json.encode(uniqueDirs))
-	fileWrite:close()
+	file:write(json.encode(unique_dirs))
+	file:close()
 
 	local popup = InfoMessage:new({
-		text = _("Added to scannable directories: " .. currDir),
+		text = _("Added to scannable directories: " .. curr_dir),
 	})
 	UIManager:show(popup)
 end

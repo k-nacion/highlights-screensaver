@@ -1,4 +1,5 @@
 local Device = require("device")
+local json = require("json")
 local lfs = require("libs/libkoreader-lfs")
 
 local M = {}
@@ -31,6 +32,32 @@ function M.makeDir(path)
 	end
 	return true
 end
+
+---@return string
+function M.getScannableDirsFilePath()
+	return M.getPluginDir() .. "/scannable-dirs.json"
+end
+
+---@return string[]
+function M.getScannableDirs()
+	local fileRead = io.open(M.getScannableDirsFilePath(), "r")
+	local contents = fileRead and fileRead:read("*a") or "[]"
+	if fileRead then
+		fileRead:close()
+	end
+
+	local dirs = json.decode(contents) or {}
+	local valid_dirs = {}
+	for _, dir in ipairs(dirs) do
+		if lfs.attributes(dir, "mode") == "directory" then
+			table.insert(valid_dirs, dir)
+		end
+	end
+	return valid_dirs
+end
+
+---@return string[]
+function M.getAllSidecarPaths() end
 
 ---@param s string
 ---@return string
