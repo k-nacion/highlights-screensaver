@@ -44,15 +44,17 @@ end
 
 function HighlightScreensaver:scanHighlights()
 	local sidecars = utils.getAllSidecarPaths()
+	local total_saved = 0
 	for _, sidecar in ipairs(sidecars) do
 		local clippings = clipper.extractClippingsFromSidecar(sidecar)
-    for _, clip in ipairs(clippings) do
-      print(clip.text)
-    end
+		for _, clipping in ipairs(clippings) do
+			clipper.saveClipping(clipping)
+			total_saved = total_saved + 1
+		end
 	end
-	local sidecar_strings = table.concat(sidecars, ", ")
+
 	local popup = InfoMessage:new({
-		text = _(sidecar_strings),
+		text = _("Saved " .. total_saved .. "highlights"),
 	})
 	UIManager:show(popup)
 end

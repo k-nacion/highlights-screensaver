@@ -63,7 +63,7 @@ function M.saveClipping(clipping)
 		error("Error opening clippings file: " .. path .. ". Error: " .. tostring(err))
 	end
 
-	local content = json.encode(clipping)
+	local content = json.encode(clipping, { indent = true })
 	file:write(content)
 	file:close()
 end
