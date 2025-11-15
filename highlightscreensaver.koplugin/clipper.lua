@@ -1,3 +1,4 @@
+local json = require("json")
 local utils = require("utils")
 
 ---@class Clipping
@@ -31,7 +32,7 @@ end
 ---@param self Clipping
 ---@return string
 function Clipping:filename()
-	return utils.normalise(self.source_title .. " " .. self.created_at)
+	return utils.normalise(self.source_title .. " " .. self.created_at .. ".json")
 end
 
 local M = {}
@@ -51,6 +52,20 @@ function M.extractClippingsFromSidecar(path)
 	end
 
 	return clippings
+end
+
+---@param clipping Clipping
+function M.saveClipping(clipping)
+	utils.makeDir(utils.getClippingsDir())
+	local path = utils.getClippingsDir() .. "/" .. clipping:filename()
+	local file, err = io.open(path, "w")
+	if not file then
+		error("Error opening clippings file: " .. path .. ". Error: " .. tostring(err))
+	end
+
+	local content = json.encode(clipping)
+	file:write(content)
+	file:close()
 end
 
 return M

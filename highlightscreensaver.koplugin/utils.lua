@@ -4,6 +4,7 @@ local lfs = require("libs/libkoreader-lfs")
 
 local M = {}
 
+---@return string
 function M.getDefaultRootDir()
 	if Device:isCervantes() or Device:isKobo() then
 		return "/mnt"
@@ -14,10 +15,17 @@ function M.getDefaultRootDir()
 	end
 end
 
+---@return string
 function M.getPluginDir()
 	return M.getDefaultRootDir() .. "/onboard/highlight-screensaver"
 end
 
+---@return string
+function M.getClippingsDir()
+	return M.getPluginDir() .. "/clippings"
+end
+
+---@param path string
 function M.makeDir(path)
 	local current = ""
 	for dir in path:gmatch("[^/]+") do
