@@ -32,4 +32,14 @@ function M.makeDir(path)
 	return true
 end
 
+---@param s string
+---@return string
+function M.normalise(s)
+	s = s:match("^%s*(.-)%s*$") -- trim
+	s = s:lower()
+	s = s:gsub("%s+", "_") -- replace spaces for underscores
+	s = s:gsub("[^%w_%-%.]", "") -- remove unsafe filename chars
+	return s
+end
+
 return M
