@@ -92,12 +92,18 @@ function HighlightScreensaver:addToScannableDirectories()
 
 	local json = require("json")
 	local dirs = json.decode(contents) or {}
-	local currDir = lfs.currentdir()
-	table.insert(dirs, currDir)
+	local valid_dirs = {}
+	for _, dir in ipairs(dirs) do
+		if lfs.attributes(dir, "mode") == "directory" then
+			table.insert(valid_dirs, dir)
+		end
+	end
+	local currDir = self.ui.file_chooser.path
+	table.insert(valid_dirs, currDir)
 
 	local uniqueDirs = {}
 	local seen = {}
-	for _, dir in ipairs(dirs) do
+	for _, dir in ipairs(valid_dirs) do
 		if not seen[dir] then
 			table.insert(uniqueDirs, dir)
 			seen[dir] = true
