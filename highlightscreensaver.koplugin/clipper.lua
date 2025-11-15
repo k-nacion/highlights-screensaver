@@ -6,6 +6,7 @@ local utils = require("utils")
 ---@field created_at string
 ---@field source_title string
 ---@field source_author string|nil
+---@field enabled boolean
 local Clipping = {}
 Clipping.__index = Clipping
 
@@ -14,14 +15,16 @@ Clipping.__index = Clipping
 ---@param created_at string
 ---@param source_title string
 ---@param source_author string|nil
+---@param enabled boolean
 ---@return Clipping
-function Clipping.new(text, note, created_at, source_title, source_author)
+function Clipping.new(text, note, created_at, source_title, source_author, enabled)
 	local self = setmetatable({}, Clipping)
 	self.text = text
 	self.note = note
 	self.created_at = created_at
 	self.source_title = source_title
 	self.source_author = source_author
+	self.enabled = enabled
 	return self
 end
 
@@ -42,7 +45,8 @@ function M.extractClippingsFromSidecar(path)
 	local clippings = {}
 
 	for _, annotation in ipairs(metadata.annotations) do
-		local clipping = Clipping.new(annotation.text, annotation.note or nil, annotation.datetime, title, authors)
+		local clipping =
+			Clipping.new(annotation.text, annotation.note or nil, annotation.datetime, title, authors, true)
 		table.insert(clippings, clipping)
 	end
 

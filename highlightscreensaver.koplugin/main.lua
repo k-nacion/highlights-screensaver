@@ -45,7 +45,10 @@ end
 function HighlightScreensaver:scanHighlights()
 	local sidecars = utils.getAllSidecarPaths()
 	for _, sidecar in ipairs(sidecars) do
-		clipper.extractClippingsFromSidecar(sidecar)
+		local clippings = clipper.extractClippingsFromSidecar(sidecar)
+    for _, clip in ipairs(clippings) do
+      print(clip.text)
+    end
 	end
 	local sidecar_strings = table.concat(sidecars, ", ")
 	local popup = InfoMessage:new({
