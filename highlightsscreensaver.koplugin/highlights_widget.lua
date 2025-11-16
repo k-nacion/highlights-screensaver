@@ -69,6 +69,29 @@ function M.buildHighlightsScreensaverWidget()
 		source_text,
 	})
 
+	if clipping.note and clipping.note ~= "" then
+		local separator = LineWidget:new({
+			dimen = Geom:new({
+				w = width,
+				h = Size.line.thin,
+			}),
+			background = col_fg,
+		})
+		local note_text = TextBoxWidget:new({
+			text = clipping.note,
+			face = Font:getFace("cfont", 18),
+			width = width,
+			fgcolor = col_fg,
+			bgcolor = col_bg,
+			alignment = "left",
+			line_height = 0.4,
+		})
+		table.insert(content, VerticalSpan:new({ width = 40 }))
+		table.insert(content, separator)
+		table.insert(content, VerticalSpan:new({ width = 20 }))
+		table.insert(content, note_text)
+	end
+
 	local container = CenterContainer:new({
 		dimen = Screen:getSize(),
 		content,
