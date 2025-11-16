@@ -35,7 +35,7 @@ function M.buildHighlightsScreensaverWidget(clipping)
 			face = Font:getFace(font_name_quote, base_font_size),
 			width = width,
 			alignment = "left",
-			justified = true,
+			justified = false,
 			line_height = 0.5,
 			fgcolor = col_fg,
 			bgcolor = col_bg,
