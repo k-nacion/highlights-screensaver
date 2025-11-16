@@ -68,4 +68,17 @@ function M.saveClipping(clipping)
 	file:close()
 end
 
+---@return Clipping
+function M.getRandomClipping()
+	local clipping = M.Clipping.new(
+		"The chief financial officer at Lucasfilm found Jobs arrogant and prickly, so when it came time to hold a meeting of all the players, he told Catmull, “We have to establish the right pecking order.” The plan was to gather everyone in a room with Jobs, and then the CFO would come in a few minutes late to establish that he was the person running the meeting. “But a funny thing happened,” Catmull recalled. “Steve started the meeting on time without the CFO, and by the time the CFO walked in Steve was already in control of the meeting.”",
+		"Pretend to be completely in control, and people will assume that you are.",
+		"2025-11-12 00:19:09",
+		"Steve Jobs",
+		"Walter Isaacson",
+		true
+	)
+	return clipping
+end
+
 return M

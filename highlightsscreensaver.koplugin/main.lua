@@ -9,6 +9,7 @@ local Screen = Device.screen
 local _ = require("gettext")
 local highlightsWidget = require("highlights_widget")
 local scan = require("scan")
+local clipper = require("clipper")
 
 local HIGHLIGHTS_MODE = "highlights"
 
@@ -25,7 +26,7 @@ _G.dofile = function(filepath)
 				text = _("Highlights screensaver"),
 				sub_item_table = {
 					{
-						text = _("Scan all book highlights"),
+						text = _("Scan book highlights"),
 						callback = function()
 							scan.scanHighlights()
 							local popup = InfoMessage:new({
@@ -35,7 +36,7 @@ _G.dofile = function(filepath)
 						end,
 					},
 					{
-						text = _("Add to scannable directories"),
+						text = _("Add current directory to scannable directories"),
 						callback = function()
 							scan.addToScannableDirectories()
 						end,
@@ -78,7 +79,8 @@ Screensaver.show = function(self)
 			Device.orig_rotation_mode = nil
 		end
 
-		self.screensaver_widget = highlightsWidget.buildHighlightsScreensaverWidget()
+		local clipping = clipper.getRandomClipping()
+		self.screensaver_widget = highlightsWidget.buildHighlightsScreensaverWidget(clipping)
 		self.screensaver_widget.modal = true
 		self.screensaver_widget.dithered = true
 		UIManager:show(self.screensaver_widget, "full")
