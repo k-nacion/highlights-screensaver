@@ -18,14 +18,19 @@ local M = {}
 function M.buildHighlightsScreensaverWidget(clipping)
 	local col_fg, col_bg = Blitbuffer.COLOR_BLACK, Blitbuffer.COLOR_WHITE
 	local width = Screen:getWidth() * 0.90
-	local font_size_main = 24
+	local font_size_main = 48
 	local function fontSizeAlt()
 		return math.ceil(font_size_main * 0.75)
+	end
+	local font_name = "cfont"
+	local user_ui_font = G_reader_settings:readSetting("ui_font")
+	if user_ui_font then
+		font_name = user_ui_font
 	end
 
 	local highlight_text = TextBoxWidget:new({
 		text = clipping.text,
-		face = Font:getFace("cfont", font_size_main),
+		face = Font:getFace(font_name, font_size_main),
 		width = width,
 		alignment = "left",
 		justified = true,
@@ -37,7 +42,7 @@ function M.buildHighlightsScreensaverWidget(clipping)
 		font_size_main = font_size_main - 2
 		highlight_text = TextBoxWidget:new({
 			text = clipping.text,
-			face = Font:getFace("cfont", font_size_main),
+			face = Font:getFace(font_name, font_size_main),
 			width = width,
 			alignment = "left",
 			justified = true,
@@ -89,7 +94,7 @@ function M.buildHighlightsScreensaverWidget(clipping)
 		})
 		local note_text = TextBoxWidget:new({
 			text = clipping.note,
-			face = Font:getFace("cfont", fontSizeAlt()),
+			face = Font:getFace(font_name, fontSizeAlt()),
 			width = width,
 			fgcolor = col_fg,
 			bgcolor = col_bg,
