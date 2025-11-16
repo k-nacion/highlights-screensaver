@@ -42,6 +42,22 @@ _G.dofile = function(filepath)
 							scan.addToScannableDirectories()
 						end,
 					},
+					{
+						text = _("Disable last shown highlight"),
+						callback = function()
+							local fname = utils.getLastShownHighlightFileName()
+							if not fname then
+								return
+							end
+							local clipping = clipper.getClipping(fname)
+							clipping.enabled = false
+							clipper.saveClipping(clipping)
+							local popup = InfoMessage:new({
+								text = _("Disabled highlight: " .. clipping:filename()),
+							})
+							UIManager:show(popup)
+						end,
+					},
 				},
 			})
 
@@ -87,10 +103,6 @@ Screensaver.show = function(self)
 			scan.scanHighlights()
 		end
 
-		-- TODO: disable last highlight
-		---- note that highlight logic has to take into account already disabled highlights.
-		---- that means reading in the existing clipping before overwriting it, using the clipping's enabled
-		---- state during the overwrite
 		local clipping = clipper.getRandomClipping()
 		utils.setLastShownHighlight(clipping)
 		self.screensaver_widget = highlightsWidget.buildHighlightsScreensaverWidget(clipping)

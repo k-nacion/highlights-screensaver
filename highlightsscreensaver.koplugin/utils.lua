@@ -85,7 +85,7 @@ function M.getLastShownHighlightPath()
 end
 
 ---@return string|nil
-function M.getLastShownHighlight()
+function M.getLastShownHighlightFileName()
 	local file = io.open(M.getLastShownHighlightPath(), "r")
 	local contents = file and file:read("*a") or nil
 	if file then

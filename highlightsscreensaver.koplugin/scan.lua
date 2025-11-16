@@ -14,6 +14,10 @@ function M.scanHighlights()
 	for _, sidecar in ipairs(sidecars) do
 		local clippings = clipper.extractClippingsFromSidecar(sidecar)
 		for _, clipping in ipairs(clippings) do
+			local existingClipping = clipper.getClipping(clipping:filename())
+			if existingClipping then
+				clipping.enabled = existingClipping.enabled
+			end
 			clipper.saveClipping(clipping)
 		end
 	end
@@ -28,7 +32,6 @@ end
 function M.addToScannableDirectories()
 	local scannable_dirs = utils.getScannableDirs()
 	local curr_dir = FileManager.instance.file_chooser.path
-	-- local curr_dir = self.ui.file_chooser.path
 	table.insert(scannable_dirs, curr_dir)
 
 	local unique_dirs = {}

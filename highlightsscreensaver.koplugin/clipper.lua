@@ -69,6 +69,20 @@ function M.saveClipping(clipping)
 	file:close()
 end
 
+---@param filename string
+---@return Clipping|nil
+function M.getClipping(filename)
+	local path = utils.getClippingsDir() .. "/" .. filename
+	local f = io.open(path, "r")
+	if not f then
+		return nil
+	end
+	local content = f:read("*a")
+	f:close()
+	local data = json.decode(content)
+	return M.Clipping.new(data.text, data.note, data.created_at, data.source_title, data.source_author, data.enabled)
+end
+
 ---@return Clipping
 function M.getRandomClipping()
 	local dir = utils.getClippingsDir()
@@ -81,31 +95,33 @@ function M.getRandomClipping()
 	-- reservoir sampling: https://en.wikipedia.org/wiki/Reservoir_sampling
 	for file in lfs.dir(dir) do
 		if file:match("%.json$") then
+			local clipping = M.getClipping(file)
+			if not clipping or not clipping.enabled then
+				goto continue
+			end
+
 			count = count + 1
 			if math.random(count) == 1 then
 				chosenFile = file
 			end
 		end
+		::continue::
 	end
 
+	local fallback_clipping = M.Clipping.new(
+		"No highlights found. Ensure there there are valid scannable directories with books that contain highlights.",
+		nil,
+		"2025-11-12 00:19:09",
+		"Highlights Screensaver",
+		nil,
+		true
+	)
 	if not chosenFile then
-		local fallback_clipping = M.Clipping.new(
-			"No highlights found. Ensure there there are valid scannable directories with books that contain highlights.",
-			nil,
-			"2025-11-12 00:19:09",
-			"Highlights Screensaver",
-			nil,
-			true
-		)
-    return fallback_clipping
+		return fallback_clipping
 	end
 
-	local path = dir .. "/" .. chosenFile
-	local f = assert(io.open(path, "r"))
-	local content = f:read("*a")
-	f:close()
-	local data = json.decode(content)
-	return M.Clipping.new(data.text, data.note, data.created_at, data.source_title, data.source_author, data.enabled)
+	local clipping = M.getClipping(chosenFile)
+	return clipping or fallback_clipping
 end
 
 return M
