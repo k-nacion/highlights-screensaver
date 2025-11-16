@@ -18,7 +18,6 @@ local M = {}
 function M.buildHighlightsScreensaverWidget(clipping)
 	local col_fg, col_bg = Blitbuffer.COLOR_WHITE, Blitbuffer.COLOR_BLACK
 	local width = Screen:getWidth() * 0.90
-	local font_size_base = 48
 	local font_name_quote = "SourceSerif4-BoldIt.ttf"
 	font_name_quote = "NotoSerif-BoldItalic.ttf"
 	local font_name_author = "SourceSerif4-Regular.ttf"
@@ -26,14 +25,14 @@ function M.buildHighlightsScreensaverWidget(clipping)
 	local font_name_note = "SourceSerif4-Bold.ttf"
 	font_name_note = "NotoSerif-Bold.ttf"
 
-	local function buildWidget(base_font_size)
+	local function buildContent(base_font_size)
 		local function fontSizeAlt()
 			return math.ceil(base_font_size * 0.75)
 		end
 
 		local highlight_text = TextBoxWidget:new({
 			text = clipping.text,
-			face = Font:getFace(font_name_quote, font_size_base),
+			face = Font:getFace(font_name_quote, base_font_size),
 			width = width,
 			alignment = "left",
 			justified = true,
@@ -41,19 +40,6 @@ function M.buildHighlightsScreensaverWidget(clipping)
 			fgcolor = col_fg,
 			bgcolor = col_bg,
 		})
-		while highlight_text:getSize().h > Screen:getHeight() * 0.8 do
-			font_size_base = font_size_base - 2
-			highlight_text = TextBoxWidget:new({
-				text = clipping.text,
-				face = Font:getFace(font_name_quote, font_size_base),
-				width = width,
-				alignment = "left",
-				justified = true,
-				line_height = 0.5,
-				fgcolor = col_fg,
-				bgcolor = col_bg,
-			})
-		end
 		local left_border = LineWidget:new({
 			dimen = Geom:new({
 				w = Size.border.thick,
@@ -110,23 +96,28 @@ function M.buildHighlightsScreensaverWidget(clipping)
 			table.insert(content, note_text)
 		end
 
-		local container = CenterContainer:new({
-			dimen = Screen:getSize(),
-			content,
-			padding = 0,
-			margin = 0,
-			bgcolor = col_bg,
-		})
-		local screensaver_widget = ScreenSaverWidget:new({
-			widget = container,
-			background = col_bg,
-			covers_fullscreen = true,
-		})
-		return screensaver_widget
+		return content
 	end
 
-	local screensaver_widget = buildWidget(font_size_base)
+	local font_size_base = 48
+	local content = buildContent(font_size_base)
+	while content:getSize().h > Screen:getHeight() * 0.95 and font_size_base > 12 do
+		font_size_base = font_size_base - 2
+		content = buildContent(font_size_base)
+	end
 
+	local container = CenterContainer:new({
+		dimen = Screen:getSize(),
+		content,
+		padding = 0,
+		margin = 0,
+		bgcolor = col_bg,
+	})
+	local screensaver_widget = ScreenSaverWidget:new({
+		widget = container,
+		background = col_bg,
+		covers_fullscreen = true,
+	})
 	return screensaver_widget
 end
 
