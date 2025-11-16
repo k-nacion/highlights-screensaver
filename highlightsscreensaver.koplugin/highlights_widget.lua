@@ -16,7 +16,7 @@ local LineWidget = require("ui/widget/linewidget")
 local M = {}
 
 function M.buildHighlightsScreensaverWidget(clipping)
-	local col_fg, col_bg = Blitbuffer.COLOR_WHITE, Blitbuffer.COLOR_BLACK
+	local col_fg, col_bg = Blitbuffer.COLOR_BLACK, Blitbuffer.COLOR_WHITE
 	local width = Screen:getWidth() * 0.90
 	local font_size_main = 24
 	local function fontSizeAlt()
