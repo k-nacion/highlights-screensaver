@@ -29,11 +29,12 @@ function M.buildHighlightsScreensaverWidget()
 		true
 	)
 	local col_fg, col_bg = Blitbuffer.COLOR_WHITE, Blitbuffer.COLOR_BLACK
+	local width = Screen:getWidth() * 0.90
 
 	local highlight_text = TextBoxWidget:new({
 		text = clipping.text,
 		face = Font:getFace("cfont", 24),
-		width = Screen:getWidth() * 0.90,
+		width = width,
 		alignment = "left",
 		justified = true,
 		line_height = 0.5,
@@ -53,11 +54,13 @@ function M.buildHighlightsScreensaverWidget()
 		highlight_text,
 	})
 
-	local source_text = TextWidget:new({
+	local source_text = TextBoxWidget:new({
 		text = "— " .. clipping.source_title .. ", " .. clipping.source_author,
 		face = Font:getFace("infofont", 18),
+		width = width,
 		fgcolor = col_fg,
 		bgcolor = col_bg,
+		alignment = "left",
 	})
 
 	local content = VerticalGroup:new({
