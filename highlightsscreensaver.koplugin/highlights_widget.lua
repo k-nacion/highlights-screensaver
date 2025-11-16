@@ -14,16 +14,16 @@ local HorizontalSpan = require("ui/widget/horizontalspan")
 local LineWidget = require("ui/widget/linewidget")
 
 local M = {}
+M.FONT_NAME_QUOTE_SETTING = "highliths_screensaver_font_name_quote"
+M.FONT_NAME_AUTHOR_SETTING = "highliths_screensaver_font_name_author"
+M.FONT_NAME_NOTE_SETTING = "highliths_screensaver_font_name_note"
 
 function M.buildHighlightsScreensaverWidget(clipping)
 	local col_fg, col_bg = Blitbuffer.COLOR_WHITE, Blitbuffer.COLOR_BLACK
 	local width = Screen:getWidth() * 0.90
-	local font_name_quote = "SourceSerif4-BoldIt.ttf"
-	font_name_quote = "NotoSerif-BoldItalic.ttf"
-	local font_name_author = "SourceSerif4-Regular.ttf"
-	font_name_author = "NotoSerif-Regular.ttf"
-	local font_name_note = "SourceSerif4-Bold.ttf"
-	font_name_note = "NotoSerif-Bold.ttf"
+	local font_name_quote = G_reader_settings:readSetting(M.FONT_NAME_QUOTE_SETTING)
+	local font_name_author = G_reader_settings:readSetting(M.FONT_NAME_AUTHOR_SETTING)
+	local font_name_note = G_reader_settings:readSetting(M.FONT_NAME_NOTE_SETTING)
 
 	local function buildContent(base_font_size)
 		local function fontSizeAlt()

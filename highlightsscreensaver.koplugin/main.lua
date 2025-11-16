@@ -11,6 +11,9 @@ local clipper = require("clipper")
 local utils = require("utils")
 
 local HIGHLIGHTS_MODE = "highlights"
+G_reader_settings:saveSetting(highlightsWidget.FONT_NAME_QUOTE_SETTING, "NotoSerif-BoldItalic.ttf")
+G_reader_settings:saveSetting(highlightsWidget.FONT_NAME_AUTHOR_SETTING, "NotoSerif-Regular.ttf")
+G_reader_settings:saveSetting(highlightsWidget.FONT_NAME_NOTE_SETTING, "NotoSerif-Bold.ttf")
 
 -- patch `dofile` to add a highlights mode
 local orig_dofile = dofile
