@@ -139,11 +139,11 @@ Screensaver.show = function(self)
 	og_screensaver_show(self)
 end
 
-local HighlightScreensaver = WidgetContainer:extend({
+local HighlightsScreensaver = WidgetContainer:extend({
 	name = "Highlights Screensaver",
 	is_doc_only = false,
 })
 
-function HighlightScreensaver:init() end
+function HighlightsScreensaver:init() end
 
-return HighlightScreensaver
+return HighlightsScreensaver
