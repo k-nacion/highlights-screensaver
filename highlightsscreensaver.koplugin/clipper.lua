@@ -1,4 +1,5 @@
 local json = require("json")
+local lfs = require("libs/libkoreader-lfs")
 local utils = require("utils")
 
 local M = {}
@@ -70,15 +71,41 @@ end
 
 ---@return Clipping
 function M.getRandomClipping()
-	local clipping = M.Clipping.new(
-		"The chief financial officer at Lucasfilm found Jobs arrogant and prickly, so when it came time to hold a meeting of all the players, he told Catmull, “We have to establish the right pecking order.” The plan was to gather everyone in a room with Jobs, and then the CFO would come in a few minutes late to establish that he was the person running the meeting. “But a funny thing happened,” Catmull recalled. “Steve started the meeting on time without the CFO, and by the time the CFO walked in Steve was already in control of the meeting.”",
-		"Pretend to be completely in control, and people will assume that you are.",
-		"2025-11-12 00:19:09",
-		"Steve Jobs",
-		"Walter Isaacson",
-		true
-	)
-	return clipping
+	local dir = utils.getClippingsDir()
+	utils.makeDir(dir)
+
+	math.randomseed(os.time())
+	local chosenFile ---@type string|nil
+	local count = 0
+
+	-- reservoir sampling: https://en.wikipedia.org/wiki/Reservoir_sampling
+	for file in lfs.dir(dir) do
+		if file:match("%.json$") then
+			count = count + 1
+			if math.random(count) == 1 then
+				chosenFile = file
+			end
+		end
+	end
+
+	if not chosenFile then
+		local fallback_clipping = M.Clipping.new(
+			"No highlights found. Ensure there there are valid scannable directories with books that contain highlights.",
+			nil,
+			"2025-11-12 00:19:09",
+			"Highlights Screensaver",
+			nil,
+			true
+		)
+    return fallback_clipping
+	end
+
+	local path = dir .. "/" .. chosenFile
+	local f = assert(io.open(path, "r"))
+	local content = f:read("*a")
+	f:close()
+	local data = json.decode(content)
+	return M.Clipping.new(data.text, data.note, data.created_at, data.source_title, data.source_author, data.enabled)
 end
 
 return M
