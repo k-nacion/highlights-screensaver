@@ -92,6 +92,7 @@ Screensaver.show = function(self)
 		---- that means reading in the existing clipping before overwriting it, using the clipping's enabled
 		---- state during the overwrite
 		local clipping = clipper.getRandomClipping()
+		utils.setLastShownHighlight(clipping)
 		self.screensaver_widget = highlightsWidget.buildHighlightsScreensaverWidget(clipping)
 		self.screensaver_widget.modal = true
 		self.screensaver_widget.dithered = true
