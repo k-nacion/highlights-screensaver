@@ -12,27 +12,10 @@ local Screen = Device.screen
 local _ = require("gettext")
 local lfs = require("libs/libkoreader-lfs")
 local utils = require("utils")
-local clipper = require("clipper")
 local highlightsWidget = require("highlights_widget")
+local scan = require("scan")
 
 local HIGHLIGHTS_MODE = "highlights"
-
-local function scanHighlights()
-	local sidecars = utils.getAllSidecarPaths()
-	local total_saved = 0
-	for _, sidecar in ipairs(sidecars) do
-		local clippings = clipper.extractClippingsFromSidecar(sidecar)
-		for _, clipping in ipairs(clippings) do
-			clipper.saveClipping(clipping)
-			total_saved = total_saved + 1
-		end
-	end
-
-	local popup = InfoMessage:new({
-		text = _("Saved " .. total_saved .. "highlights"),
-	})
-	UIManager:show(popup)
-end
 
 local function addToScannableDirectories()
 	local scannable_dirs = utils.getScannableDirs()
@@ -86,7 +69,11 @@ _G.dofile = function(filepath)
 					{
 						text = _("Scan all book highlights"),
 						callback = function()
-							scanHighlights()
+							scan.scanHighlights()
+							local popup = InfoMessage:new({
+								text = _("Finished scanning highlights"),
+							})
+							UIManager:show(popup)
 						end,
 					},
 					{
