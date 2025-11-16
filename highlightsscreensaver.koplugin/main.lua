@@ -1,3 +1,4 @@
+local Blitbuffer = require("ffi/blitbuffer")
 local json = require("json")
 -- TODO: reimplement dispatcher integration
 local Dispatcher = require("dispatcher") -- luacheck:ignore
@@ -6,12 +7,14 @@ local InfoMessage = require("ui/widget/infomessage")
 local UIManager = require("ui/uimanager")
 local WidgetContainer = require("ui/widget/container/widgetcontainer")
 local Screensaver = require("ui/screensaver")
+local ScreenSaverWidget = require("ui/widget/screensaverwidget")
 local Device = require("device")
 local Screen = Device.screen
 local _ = require("gettext")
 local lfs = require("libs/libkoreader-lfs")
 local utils = require("utils")
 local clipper = require("clipper")
+local highlightsWidget = require("highlights_widget")
 
 local HIGHLIGHTS_MODE = "highlights"
 
@@ -131,7 +134,15 @@ Screensaver.show = function(self)
 			Device.orig_rotation_mode = nil
 		end
 
-		-- TODO: create custom widget
+		local widget = highlightsWidget.buildHighlightsScreensaverWidget()
+		self.screensaver_widget = ScreenSaverWidget:new({
+			widget = widget,
+			background = Blitbuffer.COLOR_WHITE,
+			covers_fullscreen = true,
+		})
+		self.screensaver_widget.modal = true
+		self.screensaver_widget.dithered = true
+		UIManager:show(self.screensaver_widget, "full")
 
 		return
 	end

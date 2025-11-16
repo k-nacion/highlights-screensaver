@@ -1,6 +1,8 @@
 local json = require("json")
 local utils = require("utils")
 
+local M = {}
+
 ---@class Clipping
 ---@field text string
 ---@field note string|nil
@@ -8,8 +10,8 @@ local utils = require("utils")
 ---@field source_title string
 ---@field source_author string|nil
 ---@field enabled boolean
-local Clipping = {}
-Clipping.__index = Clipping
+M.Clipping = {}
+M.Clipping.__index = M.Clipping
 
 ---@param text string
 ---@param note string|nil
@@ -18,8 +20,8 @@ Clipping.__index = Clipping
 ---@param source_author string|nil
 ---@param enabled boolean
 ---@return Clipping
-function Clipping.new(text, note, created_at, source_title, source_author, enabled)
-	local self = setmetatable({}, Clipping)
+function M.Clipping.new(text, note, created_at, source_title, source_author, enabled)
+	local self = setmetatable({}, M.Clipping)
 	self.text = text
 	self.note = note
 	self.created_at = created_at
@@ -31,11 +33,9 @@ end
 
 ---@param self Clipping
 ---@return string
-function Clipping:filename()
+function M.Clipping:filename()
 	return utils.normalise(self.source_title .. " " .. self.created_at .. ".json")
 end
-
-local M = {}
 
 ---@param path string
 ---@return Clipping[]
@@ -47,7 +47,7 @@ function M.extractClippingsFromSidecar(path)
 
 	for _, annotation in ipairs(metadata.annotations) do
 		local clipping =
-			Clipping.new(annotation.text, annotation.note or nil, annotation.datetime, title, authors, true)
+			M.Clipping.new(annotation.text, annotation.note or nil, annotation.datetime, title, authors, true)
 		table.insert(clippings, clipping)
 	end
 
