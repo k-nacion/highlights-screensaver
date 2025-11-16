@@ -10,6 +10,8 @@ local clipper = require("clipper")
 local M = {}
 
 function M.scanHighlights()
+	utils.makeDir(utils.getPluginDir())
+
 	local sidecars = utils.getAllSidecarPaths()
 	for _, sidecar in ipairs(sidecars) do
 		local clippings = clipper.extractClippingsFromSidecar(sidecar)
