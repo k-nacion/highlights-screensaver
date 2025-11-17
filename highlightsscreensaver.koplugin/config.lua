@@ -57,6 +57,18 @@ function Config:save()
     file:close()
 end
 
+---@return string[]
+function M.getScannableDirectories()
+    local config = load()
+    return config.scannable_directories
+end
+
+---@param dirs string[]
+function M.setScannableDirectories(dirs)
+    local config = load()
+    config.scannable_directories = dirs
+    config:save()
+end
 
 ---@return string|nil
 function M.getLastScannedDate()

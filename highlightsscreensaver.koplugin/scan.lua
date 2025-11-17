@@ -64,20 +64,20 @@ function M.scanHighlights()
 end
 
 function M.addToScannableDirectories()
-	local conf = config.load()
 	local curr_dir = FileManager.instance.file_chooser.path
-	table.insert(conf.scannable_directories, curr_dir)
+	local scannable_directories = config.getScannableDirectories()
+	table.insert(scannable_directories, curr_dir)
 
 	local unique_dirs = {}
 	local seen = {}
-	for _, dir in ipairs(conf.scannable_directories) do
+	for _, dir in ipairs(scannable_directories) do
 		if not seen[dir] then
 			table.insert(unique_dirs, dir)
 			seen[dir] = true
 		end
 	end
 
-	conf:save()
+	config.setScannableDirectories(unique_dirs)
 	local popup = InfoMessage:new({
 		text = _("Added to scannable directories: " .. curr_dir),
 	})
