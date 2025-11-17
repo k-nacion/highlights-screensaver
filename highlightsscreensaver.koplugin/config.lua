@@ -61,6 +61,19 @@ function Config:save()
     file:close()
 end
 
+---@return Theme
+function M.getTheme()
+    local config = load()
+    return config.theme
+end
+
+---@param theme Theme
+function M.setTheme(theme)
+    local config = load()
+    config.theme = theme
+    config:save()
+end
+
 ---@return string[]
 function M.getScannableDirectories()
     local config = load()

@@ -1,7 +1,7 @@
 - [-] unify config
     - [x] scannable dirs
-    - [ ] last scanned date
-    - [ ] last shown highlight
+    - [x] last scanned date
+    - [x] last shown highlight
     - [ ] theme
 - [ ] fonts
 - [ ] light/dark mode

@@ -63,6 +63,32 @@ _G.dofile = function(filepath)
 							UIManager:show(popup)
 						end,
 					},
+					{
+						text = _("Theme"),
+						sub_item_table = {
+							{
+								text = _("Dark"),
+								checked_func = function()
+									return config.getTheme() == config.Theme.DARK
+								end,
+								callback = function()
+									return config.setTheme(config.Theme.DARK)
+								end,
+								radio = true,
+
+							},
+							{
+								text = _("Light"),
+								checked_func = function()
+									return config.getTheme() == config.Theme.LIGHT
+								end,
+								callback = function()
+									return config.setTheme(config.Theme.LIGHT)
+								end,
+								radio = true,
+							},
+						},
+					},
 				},
 			})
 
