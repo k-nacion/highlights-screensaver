@@ -12,6 +12,7 @@ local config = require("config")
 local ffiUtil = require("ffi/util")
 local T = ffiUtil.template
 local BD = require("ui/bidi")
+local FontList = require("fontlist")
 local Font = require("ui/font")
 local cre = require("document/credocument"):engineInit()
 
@@ -93,9 +94,36 @@ local function buildMenuTheme()
 end
 
 local function buildMenuFonts()
-	local quote = {}
-	local author = {}
-	local note = {}
+	local all_fonts = FontList:getFontList()
+
+	local function buildFontSubmenu(display_name, font_key)
+		local curr_fonts = config.getFonts()
+		local currently_selected = curr_fonts[font_key]
+		local submenu = {
+			text = display_name .. ": " .. currently_selected,
+			sub_item_table = {},
+		}
+
+		for _, font_path in ipairs(all_fonts) do
+			local _, font_filename = require("util").splitFilePathName(font_path)
+			table.insert(submenu.sub_item_table, {
+				text = font_filename,
+				callback = function()
+					curr_fonts[font_key] = font_filename
+					config.setFonts(curr_fonts)
+				end,
+				checked_func = function()
+					return font_filename == currently_selected
+				end,
+			})
+		end
+
+		return submenu
+	end
+
+	local quote = buildFontSubmenu("Quote", "quote")
+	local author = buildFontSubmenu("Author", "author")
+	local note = buildFontSubmenu("Note", "note")
 	return {
 		text = "Fonts",
 		sub_item_table = { quote, author, note },
