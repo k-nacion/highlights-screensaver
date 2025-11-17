@@ -1,8 +1,6 @@
 local _ = require("gettext")
 local FileManager = require("apps/filemanager/filemanager")
 local InfoMessage = require("ui/widget/infomessage")
-local json = require("json")
-local lfs = require("libs/libkoreader-lfs")
 local UIManager = require("ui/uimanager")
 
 local clipper = require("clipper")
@@ -13,8 +11,9 @@ local M = {}
 
 function M.scanHighlights()
 	utils.makeDir(utils.getPluginDir())
+	local conf = config.load()
 
-	local sidecars = utils.getAllSidecarPaths()
+	local sidecars = utils.getAllSidecarPaths(conf.scannable_directories)
 	for _, sidecar in ipairs(sidecars) do
 		local clippings = clipper.extractClippingsFromSidecar(sidecar)
 		for _, clipping in ipairs(clippings) do

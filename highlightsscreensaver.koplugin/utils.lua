@@ -1,5 +1,4 @@
 local Device = require("device")
-local config = require("config")
 local lfs = require("libs/libkoreader-lfs")
 
 local M = {}
@@ -79,8 +78,9 @@ function M.setLastShownHighlight(clipping)
 	file:close()
 end
 
+---@param scannable_dirs string[]
 ---@return string[]
-function M.getAllSidecarPaths()
+function M.getAllSidecarPaths(scannable_dirs)
 	local sidecars = {}
 	local function searchDir(dir)
 		for member in lfs.dir(dir) do
@@ -101,8 +101,7 @@ function M.getAllSidecarPaths()
 		end
 	end
 
-	local conf = config.load()
-	for _, dir in ipairs(conf.scannable_directories) do
+	for _, dir in ipairs(scannable_dirs) do
 		searchDir(dir)
 	end
 
