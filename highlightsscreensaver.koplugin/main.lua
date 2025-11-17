@@ -17,6 +17,18 @@ G_reader_settings:saveSetting(highlightsWidget.FONT_NAME_QUOTE_SETTING, "NotoSer
 G_reader_settings:saveSetting(highlightsWidget.FONT_NAME_AUTHOR_SETTING, "NotoSerif-Regular.ttf")
 G_reader_settings:saveSetting(highlightsWidget.FONT_NAME_NOTE_SETTING, "NotoSerif-Bold.ttf")
 
+local function buildMenuScanHighlights()
+	return {
+		text = _("Scan book highlights"),
+		callback = function()
+			scan.scanHighlights()
+			local popup = InfoMessage:new({
+				text = _("Finished scanning highlights"),
+			})
+			UIManager:show(popup)
+		end,
+	}
+end
 local function buildMenuAddScannableDirectory()
 	return {
 		text = _("Add current directory to scannable directories"),
@@ -92,16 +104,7 @@ _G.dofile = function(filepath)
 			table.insert(result, 3, {
 				text = _("Highlights screensaver"),
 				sub_item_table = {
-					{
-						text = _("Scan book highlights"),
-						callback = function()
-							scan.scanHighlights()
-							local popup = InfoMessage:new({
-								text = _("Finished scanning highlights"),
-							})
-							UIManager:show(popup)
-						end,
-					},
+					buildMenuScanHighlights(),
 					buildMenuAddScannableDirectory(),
 					buildMenuDisableHighlight(),
 					buildMenuTheme()
