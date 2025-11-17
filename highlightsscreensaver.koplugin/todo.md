@@ -2,6 +2,7 @@
     - [x] scannable dirs
     - [x] last scanned date
     - [x] last shown highlight
-    - [ ] theme
+    - [x] theme
+- [ ] refactor menu building fns
 - [ ] fonts
-- [ ] light/dark mode
+- [x] light/dark mode

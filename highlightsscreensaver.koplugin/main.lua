@@ -9,13 +9,45 @@ local highlightsWidget = require("highlights_widget")
 local scan = require("scan")
 local clipper = require("clipper")
 local config = require("config")
-local ffiUtil = require("ffi/util")  
+local ffiUtil = require("ffi/util")
 local T = ffiUtil.template
 
 local HIGHLIGHTS_MODE = "highlights"
 G_reader_settings:saveSetting(highlightsWidget.FONT_NAME_QUOTE_SETTING, "NotoSerif-BoldItalic.ttf")
 G_reader_settings:saveSetting(highlightsWidget.FONT_NAME_AUTHOR_SETTING, "NotoSerif-Regular.ttf")
 G_reader_settings:saveSetting(highlightsWidget.FONT_NAME_NOTE_SETTING, "NotoSerif-Bold.ttf")
+
+local function buildMenuTheme()
+	local dark = {
+		text = _("Dark"),
+		checked_func = function()
+			return config.getTheme() == config.Theme.DARK
+		end,
+		callback = function()
+			return config.setTheme(config.Theme.DARK)
+		end,
+		radio = true,
+
+	}
+	local light = {
+		text = _("Light"),
+		checked_func = function()
+			return config.getTheme() == config.Theme.LIGHT
+		end,
+		callback = function()
+			return config.setTheme(config.Theme.LIGHT)
+		end,
+		radio = true,
+	}
+	return {
+		text_func = function()
+			local theme = config.getTheme()
+			local theme_name = theme:sub(1, 1):upper() .. theme:sub(2)
+			return T(_("Theme: %1"), _(theme_name))
+		end,
+		sub_item_table = { dark, light },
+	}
+end
 
 -- patch `dofile` to add a highlights mode
 local orig_dofile = dofile
@@ -64,36 +96,8 @@ _G.dofile = function(filepath)
 							UIManager:show(popup)
 						end,
 					},
-					{
-						text_func = function()
-							local theme = config.getTheme()
-							local theme_name = theme:sub(1, 1):upper() .. theme:sub(2)
-							return T(_("Theme: %1"), _(theme_name))
-						end,
-						sub_item_table = {
-							{
-								text = _("Dark"),
-								checked_func = function()
-									return config.getTheme() == config.Theme.DARK
-								end,
-								callback = function()
-									return config.setTheme(config.Theme.DARK)
-								end,
-								radio = true,
-
-							},
-							{
-								text = _("Light"),
-								checked_func = function()
-									return config.getTheme() == config.Theme.LIGHT
-								end,
-								callback = function()
-									return config.setTheme(config.Theme.LIGHT)
-								end,
-								radio = true,
-							},
-						},
-					},
+					buildMenuTheme()
+					,
 				},
 			})
 
