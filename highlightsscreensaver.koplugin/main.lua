@@ -11,6 +11,9 @@ local clipper = require("clipper")
 local config = require("config")
 local ffiUtil = require("ffi/util")
 local T = ffiUtil.template
+local BD = require("ui/bidi")
+local Font = require("ui/font")
+local cre = require("document/credocument"):engineInit()
 
 local HIGHLIGHTS_MODE = "highlights"
 G_reader_settings:saveSetting(highlightsWidget.FONT_NAME_QUOTE_SETTING, "NotoSerif-BoldItalic.ttf")
@@ -92,6 +95,103 @@ local function buildMenuTheme()
 	}
 end
 
+local function buildFontFamilyList(element_type, current_font)
+	local face_list = cre.getFontFaces()
+	local font_items = {}
+
+	for _, v in ipairs(face_list) do
+		local font_filename, font_faceindex = cre.getFontFaceFilenameAndFaceIndex(v)
+		if not font_filename then
+			font_filename, font_faceindex = cre.getFontFaceFilenameAndFaceIndex(v, nil, true)
+		end
+
+		table.insert(font_items, {
+			text_func = function()
+				local text = v
+				if v == current_font then
+					text = text .. "   ★"
+				end
+				return text
+			end,
+			font_func = function(size)
+				if font_filename and font_faceindex then
+					return Font:getFace(font_filename, size, font_faceindex)
+				end
+			end,
+			callback = function()
+				-- TODO: save settings
+			end,
+			checked_func = function()
+				return v == current_font
+			end,
+		})
+	end
+
+	return font_items
+end
+
+---@param bold boolean
+---@param italic boolean
+local function buildFontStyleMenu(element_name, element_type, bold, italic)
+	return {
+		text_func = function()
+			local font = "NotoSerif" -- TODO: read font from config
+
+			local style = ""
+			if bold then
+				style = style .. "B"
+			end
+			if italic then
+				style = style .. "I"
+			end
+			if style ~= "" then
+				return T(_("%1: %2 (%3)"), element_name, BD.wrap(font), style)
+			else
+				return T(_("%1: %2"), element_name, BD.wrap(font))
+			end
+		end,
+		sub_item_table = {
+			{
+				text = _("Font family"),
+				sub_item_table_func = function()
+					return buildFontFamilyList(element_type, "NotoSerif")
+				end,
+			},
+			{
+				text = _("Bold"),
+				checked_func = function()
+					-- TODO: implement
+					return false
+				end,
+				callback = function()
+					-- save settings
+				end,
+			},
+			{
+				text = _("Italic"),
+				checked_func = function()
+					-- TODO: implement
+					return false
+				end,
+				callback = function()
+					-- TODO: implement
+					return false
+				end,
+			},
+		}
+	}
+end
+
+local function buildMenuFonts()
+	local quote = buildFontStyleMenu(_("Quote"), "quote", true, true)
+	local author = buildFontStyleMenu(_("Author"), "author", false, false)
+	local note = buildFontStyleMenu(_("Note"), "note", true, false)
+	return {
+		text = "Fonts",
+		sub_item_table = { quote, author, note },
+	}
+end
+
 -- patch `dofile` to add a highlights mode
 local orig_dofile = dofile
 _G.dofile = function(filepath)
@@ -107,8 +207,8 @@ _G.dofile = function(filepath)
 					buildMenuScanHighlights(),
 					buildMenuAddScannableDirectory(),
 					buildMenuDisableHighlight(),
-					buildMenuTheme()
-					,
+					buildMenuTheme(),
+					buildMenuFonts(),
 				},
 			})
 
