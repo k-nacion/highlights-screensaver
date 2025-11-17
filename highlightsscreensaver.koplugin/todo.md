@@ -4,5 +4,5 @@
     - [x] last shown highlight
     - [x] theme
 - [x] refactor menu building fns
-- [ ] fonts
+- [x] fonts
 - [x] light/dark mode

@@ -71,7 +71,6 @@ local function buildMenuTheme()
 			return config.setTheme(config.Theme.DARK)
 		end,
 		radio = true,
-
 	}
 	local light = {
 		text = _("Light"),
@@ -99,7 +98,7 @@ local function buildMenuFonts()
 
 	local function buildFontSubmenu(display_name, font_key)
 		local submenu = {
-			text_func = function ()
+			text_func = function()
 				return display_name .. ": " .. curr_fonts[font_key]
 			end,
 			sub_item_table = {},
