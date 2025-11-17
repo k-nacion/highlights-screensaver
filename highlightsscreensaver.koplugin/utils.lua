@@ -40,29 +40,6 @@ function M.makeDir(path)
 	return true
 end
 
----@return string
-function M.getLastShownHighlightPath()
-	return M.getPluginDir() .. "/last-shown-highlight.txt"
-end
-
----@return string|nil
-function M.getLastShownHighlightFileName()
-	local file = io.open(M.getLastShownHighlightPath(), "r")
-	local contents = file and file:read("*a") or nil
-	if file then
-		file:close()
-	end
-	return contents
-end
-
-function M.setLastShownHighlight(clipping)
-	M.makeDir(M.getPluginDir())
-	local file = assert(io.open(M.getLastShownHighlightPath(), "w"))
-	local content = clipping:filename()
-	file:write(content)
-	file:close()
-end
-
 ---@param s string
 ---@return string
 function M.normalise(s)

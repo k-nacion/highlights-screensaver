@@ -47,11 +47,14 @@ _G.dofile = function(filepath)
 					{
 						text = _("Disable last shown highlight"),
 						callback = function()
-							local fname = utils.getLastShownHighlightFileName()
+							local fname = config.getLastShownHighlight()
 							if not fname then
 								return
 							end
 							local clipping = clipper.getClipping(fname)
+							if not clipping then
+								return
+							end
 							clipping.enabled = false
 							clipper.saveClipping(clipping)
 							local popup = InfoMessage:new({
@@ -106,7 +109,7 @@ Screensaver.show = function(self)
 		end
 
 		local clipping = clipper.getRandomClipping()
-		utils.setLastShownHighlight(clipping)
+		config.setLastShownHighlight(clipping:filename())
 		self.screensaver_widget = highlightsWidget.buildHighlightsScreensaverWidget(clipping)
 		self.screensaver_widget.modal = true
 		self.screensaver_widget.dithered = true

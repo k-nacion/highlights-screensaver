@@ -15,6 +15,7 @@ M.Theme = {
 ---@field theme Theme
 ---@field scannable_directories string[]
 ---@field last_scanned_date string|nil
+---@field last_shown_highlight string|nil
 local Config = {}
 Config.__index = Config
 
@@ -24,7 +25,9 @@ end
 
 ---@return Config
 local function load()
-    local default_config = setmetatable({ theme = M.Theme.DARK, scannable_directories = {} }, Config)
+    local default_config = setmetatable(
+        { theme = M.Theme.DARK, scannable_directories = {}, last_scanned_date = nil, last_shown_highlight = nil }, Config)
+
     local file = io.open(getConfigFilePath(), "r")
     if not file then
         return default_config
@@ -40,7 +43,8 @@ local function load()
     return setmetatable({
         theme = data.theme or M.Theme.DARK,
         scannable_directories = data.scannable_directories or {},
-        last_scanned_date = data.last_scanned_date or nil
+        last_scanned_date = data.last_scanned_date or nil,
+        last_shown_highlight = data.last_shown_highlight or nil,
     }, Config)
 end
 
@@ -80,6 +84,19 @@ end
 function M.setLastScannedDate(date)
     local config = load()
     config.last_scanned_date = date
+    config:save()
+end
+
+---@return string|nil
+function M.getLastShownHighlight()
+    local config = load()
+    return config.last_shown_highlight
+end
+
+---@param filename string
+function M.setLastShownHighlight(filename)
+    local config = load()
+    config.last_shown_highlight = filename
     config:save()
 end
 
