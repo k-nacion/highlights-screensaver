@@ -11,6 +11,7 @@ M.Theme = {
     LIGHT = "light"
 }
 
+-- TODO: last scanned date
 ---@class Config
 ---@field theme Theme
 ---@field scannable_directories string[]
@@ -22,7 +23,7 @@ local function getConfigFilePath()
 end
 
 ---@return Config
-function Config.load()
+function M.load()
     local default_config = setmetatable({ theme = M.Theme.DARK, scannable_directories = {} }, Config)
     local file = io.open(getConfigFilePath(), "r")
     if not file then

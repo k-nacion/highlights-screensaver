@@ -1,5 +1,5 @@
 local Device = require("device")
-local json = require("json")
+local config = require("config")
 local lfs = require("libs/libkoreader-lfs")
 
 local M = {}
@@ -42,29 +42,6 @@ function M.makeDir(path)
 end
 
 ---@return string
-function M.getScannableDirsFilePath()
-	return M.getPluginDir() .. "/scannable-dirs.json"
-end
-
----@return string[]
-function M.getScannableDirs()
-	local file = io.open(M.getScannableDirsFilePath(), "r")
-	local contents = file and file:read("*a") or "[]"
-	if file then
-		file:close()
-	end
-
-	local dirs = json.decode(contents) or {}
-	local valid_dirs = {}
-	for _, dir in ipairs(dirs) do
-		if lfs.attributes(dir, "mode") == "directory" then
-			table.insert(valid_dirs, dir)
-		end
-	end
-	return valid_dirs
-end
-
----@return string
 function M.getLastScannedDateFilePath()
 	return M.getPluginDir() .. "/last-scanned.txt"
 end
@@ -104,9 +81,7 @@ end
 
 ---@return string[]
 function M.getAllSidecarPaths()
-	local scannable_dirs = M.getScannableDirs()
 	local sidecars = {}
-
 	local function searchDir(dir)
 		for member in lfs.dir(dir) do
 			if member == "." or member == ".." then
@@ -126,7 +101,8 @@ function M.getAllSidecarPaths()
 		end
 	end
 
-	for _, dir in ipairs(scannable_dirs) do
+	local conf = config.load()
+	for _, dir in ipairs(conf.scannable_directories) do
 		searchDir(dir)
 	end
 

@@ -5,8 +5,9 @@ local json = require("json")
 local lfs = require("libs/libkoreader-lfs")
 local UIManager = require("ui/uimanager")
 
-local utils = require("utils")
 local clipper = require("clipper")
+local config = require("config")
+local utils = require("utils")
 
 local M = {}
 
@@ -33,35 +34,20 @@ function M.scanHighlights()
 end
 
 function M.addToScannableDirectories()
-	local scannable_dirs = utils.getScannableDirs()
+	local conf = config.load()
 	local curr_dir = FileManager.instance.file_chooser.path
-	table.insert(scannable_dirs, curr_dir)
+	table.insert(conf.scannable_directories, curr_dir)
 
 	local unique_dirs = {}
 	local seen = {}
-	for _, dir in ipairs(scannable_dirs) do
+	for _, dir in ipairs(conf.scannable_directories) do
 		if not seen[dir] then
 			table.insert(unique_dirs, dir)
 			seen[dir] = true
 		end
 	end
 
-	local dir = utils.getPluginDir()
-	local attr = lfs.attributes(dir)
-	if not attr then
-		local ok, err = utils.makeDir(utils.getPluginDir())
-		if not ok then
-			error(tostring(err))
-		end
-	end
-
-	local file, err = io.open(utils.getScannableDirsFilePath(), "w")
-	if not file then
-		error("Failed to open scannable-dirs file: " .. tostring(err))
-	end
-	file:write(json.encode(unique_dirs))
-	file:close()
-
+	conf:save()
 	local popup = InfoMessage:new({
 		text = _("Added to scannable directories: " .. curr_dir),
 	})
