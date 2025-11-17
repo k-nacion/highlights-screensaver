@@ -21,6 +21,7 @@ M.FONT_NAME_NOTE_SETTING = "highliths_screensaver_font_name_note"
 
 function M.buildHighlightsScreensaverWidget(clipping)
 	local theme = config.getTheme()
+	local fonts = config.getFonts()
 	local col_fg, col_bg
 	if theme == config.Theme.DARK then
 		col_fg = Blitbuffer.COLOR_WHITE
@@ -29,12 +30,6 @@ function M.buildHighlightsScreensaverWidget(clipping)
 		col_fg = Blitbuffer.COLOR_BLACK
 		col_bg = Blitbuffer.COLOR_WHITE
 	end
-
-	-- TODO: move fonts to config
-	local font_name_quote = G_reader_settings:readSetting(M.FONT_NAME_QUOTE_SETTING)
-	local font_name_author = G_reader_settings:readSetting(M.FONT_NAME_AUTHOR_SETTING)
-	local font_name_note = G_reader_settings:readSetting(M.FONT_NAME_NOTE_SETTING)
-
 	local width = Screen:getWidth() * 0.90
 
 	local function buildContent(base_font_size)
@@ -44,7 +39,7 @@ function M.buildHighlightsScreensaverWidget(clipping)
 
 		local highlight_text = TextBoxWidget:new({
 			text = clipping.text,
-			face = Font:getFace(font_name_quote, base_font_size),
+			face = Font:getFace(fonts.quote, base_font_size),
 			width = width,
 			alignment = "left",
 			justified = false,
@@ -72,7 +67,7 @@ function M.buildHighlightsScreensaverWidget(clipping)
 
 		local source_text = TextBoxWidget:new({
 			text = "— " .. clipping.source_title .. author_suffix,
-			face = Font:getFace(font_name_author, fontSizeAlt()),
+			face = Font:getFace(fonts.author, fontSizeAlt()),
 			width = width,
 			fgcolor = col_fg,
 			bgcolor = col_bg,
@@ -95,7 +90,7 @@ function M.buildHighlightsScreensaverWidget(clipping)
 			})
 			local note_text = TextBoxWidget:new({
 				text = clipping.note,
-				face = Font:getFace(font_name_note, fontSizeAlt()),
+				face = Font:getFace(fonts.note, fontSizeAlt()),
 				width = width,
 				fgcolor = col_fg,
 				bgcolor = col_bg,
