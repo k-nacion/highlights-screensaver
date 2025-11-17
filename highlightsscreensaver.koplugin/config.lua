@@ -23,7 +23,7 @@ local function getConfigFilePath()
 end
 
 ---@return Config
-function M.load()
+local function load()
     local default_config = setmetatable({ theme = M.Theme.DARK, scannable_directories = {} }, Config)
     local file = io.open(getConfigFilePath(), "r")
     if not file then
@@ -57,6 +57,11 @@ function Config:save()
     file:close()
 end
 
-M.Config = Config
+
+---@return string|nil
+function M.getLastScannedDate()
+    local config = load()
+    return config.last_scanned_date
+end
 
 return M

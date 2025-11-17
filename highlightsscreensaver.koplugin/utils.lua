@@ -41,21 +41,6 @@ function M.makeDir(path)
 end
 
 ---@return string
-function M.getLastScannedDateFilePath()
-	return M.getPluginDir() .. "/last-scanned.txt"
-end
-
----@return string|nil
-function M.getLastScannedDate()
-	local file = io.open(M.getLastScannedDateFilePath(), "r")
-	local contents = file and file:read("*a") or nil
-	if file then
-		file:close()
-	end
-	return contents
-end
-
----@return string
 function M.getLastShownHighlightPath()
 	return M.getPluginDir() .. "/last-shown-highlight.txt"
 end

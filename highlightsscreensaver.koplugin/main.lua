@@ -9,6 +9,7 @@ local highlightsWidget = require("highlights_widget")
 local scan = require("scan")
 local clipper = require("clipper")
 local utils = require("utils")
+local config = require("config")
 
 local HIGHLIGHTS_MODE = "highlights"
 G_reader_settings:saveSetting(highlightsWidget.FONT_NAME_QUOTE_SETTING, "NotoSerif-BoldItalic.ttf")
@@ -97,7 +98,7 @@ Screensaver.show = function(self)
 			Device.orig_rotation_mode = nil
 		end
 
-		local last_scanned = utils.getLastScannedDate()
+		local last_scanned = config.getLastScannedDate()
 		local t = os.date("*t")
 		local today = string.format("%04d-%02d-%02d", t.year, t.month, t.day)
 		if not last_scanned or last_scanned < today then
