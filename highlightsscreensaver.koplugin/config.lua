@@ -145,4 +145,19 @@ function M.setLastShownHighlight(filename)
     config:save()
 end
 
+---@param fonts Fonts
+function M.setFonts(fonts)
+    local config = load()
+    config.fonts = fonts
+    config:save()
+end
+
+---@return Fonts
+function M.getFonts()
+    local config = load()
+    return config.fonts
+end
+
+M.Fonts = Fonts
+
 return M
