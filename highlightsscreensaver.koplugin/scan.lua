@@ -2,6 +2,7 @@ local _ = require("gettext")
 local FileManager = require("apps/filemanager/filemanager")
 local InfoMessage = require("ui/widget/infomessage")
 local UIManager = require("ui/uimanager")
+local lfs = require("libs/libkoreader-lfs")
 
 local clipper = require("clipper")
 local config = require("config")
@@ -9,11 +10,41 @@ local utils = require("utils")
 
 local M = {}
 
+---@param scannable_dirs string[]
+---@return string[]
+local function getAllSidecarPaths(scannable_dirs)
+	local sidecars = {}
+	local function searchDir(dir)
+		for member in lfs.dir(dir) do
+			if member == "." or member == ".." then
+				goto continue -- skip current and parent dirs
+			end
+
+			local path = dir .. "/" .. member
+			local attr = lfs.attributes(path)
+			if attr and attr.mode == "directory" then
+				if member:match("%.sdr$") then
+					table.insert(sidecars, path)
+				else
+					searchDir(path)
+				end
+			end
+			::continue::
+		end
+	end
+
+	for _, dir in ipairs(scannable_dirs) do
+		searchDir(dir)
+	end
+
+	return sidecars
+end
+
 function M.scanHighlights()
 	utils.makeDir(utils.getPluginDir())
 	local conf = config.load()
 
-	local sidecars = utils.getAllSidecarPaths(conf.scannable_directories)
+	local sidecars = getAllSidecarPaths(conf.scannable_directories)
 	for _, sidecar in ipairs(sidecars) do
 		local clippings = clipper.extractClippingsFromSidecar(sidecar)
 		for _, clipping in ipairs(clippings) do

@@ -78,42 +78,12 @@ function M.setLastShownHighlight(clipping)
 	file:close()
 end
 
----@param scannable_dirs string[]
----@return string[]
-function M.getAllSidecarPaths(scannable_dirs)
-	local sidecars = {}
-	local function searchDir(dir)
-		for member in lfs.dir(dir) do
-			if member == "." or member == ".." then
-				goto continue -- skip current and parent dirs
-			end
-
-			local path = dir .. "/" .. member
-			local attr = lfs.attributes(path)
-			if attr and attr.mode == "directory" then
-				if member:match("%.sdr$") then
-					table.insert(sidecars, path)
-				else
-					searchDir(path)
-				end
-			end
-			::continue::
-		end
-	end
-
-	for _, dir in ipairs(scannable_dirs) do
-		searchDir(dir)
-	end
-
-	return sidecars
-end
-
 ---@param s string
 ---@return string
 function M.normalise(s)
 	s = s:match("^%s*(.-)%s*$") -- trim
 	s = s:lower()
-	s = s:gsub("%s+", "_") -- replace spaces for underscores
+	s = s:gsub("%s+", "_")    -- replace spaces for underscores
 	s = s:gsub("[^%w_%-%.]", "") -- remove unsafe filename chars
 	return s
 end

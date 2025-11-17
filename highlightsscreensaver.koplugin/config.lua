@@ -11,7 +11,6 @@ M.Theme = {
     LIGHT = "light"
 }
 
--- TODO: last scanned date
 ---@class Config
 ---@field theme Theme
 ---@field scannable_directories string[]
