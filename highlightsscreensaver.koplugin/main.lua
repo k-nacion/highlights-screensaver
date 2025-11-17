@@ -95,12 +95,13 @@ end
 
 local function buildMenuFonts()
 	local all_fonts = FontList:getFontList()
+	local curr_fonts = config.getFonts()
 
 	local function buildFontSubmenu(display_name, font_key)
-		local curr_fonts = config.getFonts()
-		local currently_selected = curr_fonts[font_key]
 		local submenu = {
-			text = display_name .. ": " .. currently_selected,
+			text_func = function ()
+				return display_name .. ": " .. curr_fonts[font_key]
+			end,
 			sub_item_table = {},
 		}
 
@@ -113,7 +114,7 @@ local function buildMenuFonts()
 					config.setFonts(curr_fonts)
 				end,
 				checked_func = function()
-					return font_filename == currently_selected
+					return font_filename == curr_fonts[font_key]
 				end,
 			})
 		end

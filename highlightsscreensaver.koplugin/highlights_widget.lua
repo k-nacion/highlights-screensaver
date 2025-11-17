@@ -15,9 +15,6 @@ local HorizontalSpan = require("ui/widget/horizontalspan")
 local LineWidget = require("ui/widget/linewidget")
 
 local M = {}
-M.FONT_NAME_QUOTE_SETTING = "highliths_screensaver_font_name_quote"
-M.FONT_NAME_AUTHOR_SETTING = "highliths_screensaver_font_name_author"
-M.FONT_NAME_NOTE_SETTING = "highliths_screensaver_font_name_note"
 
 function M.buildHighlightsScreensaverWidget(clipping)
 	local theme = config.getTheme()
