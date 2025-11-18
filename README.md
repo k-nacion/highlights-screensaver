@@ -27,7 +27,7 @@ Next we will set up the directories which Highlights Screensaver will scan for b
 2. Navigate to wherever your books are stored.
 3. In the settings menu, go to `Screen > Sleep screen > Highlights screensaver`. Select "Add current directory to scannable directories".
 
-You may add as many directories to Highlights Screensaver's watch list as you want, but most users will likely only need to add the top-level directory which contains their library. This is likely the location you've made your home directory. Note that all subdirectories will also be scanned, so no need to add these individually if you've already added your top-level library directory.
+You may add as many directories to Highlights Screensaver's watch list as you want, but most users will likely only need to add the top-level directory which contains their library. This is likely the location you've made your home directory. Note that all subdirectories will also be scanned, so there is no need to add these individually if you've already added your top-level library directory.
 
 4. In the settings menu, go to `Screen > Sleep screen > Highlights screensaver`. Select "Scan book highlights".
 
@@ -41,4 +41,4 @@ Highlights Screensaver has been tested to work on Kobo Libra Colour. It may (sho
 If you find it works on a different device, please let me know so I can compile a compatibility list. If it doesn't, please open an issue or contribute to the project.
 
 ---
-⭐Please leave a star if you enjoy Highlights Screensaver
+⭐ Please leave a star if you enjoy Highlights Screensaver
