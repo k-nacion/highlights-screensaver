@@ -27,7 +27,7 @@ Next we will set up the directories which Highlights Screensaver will scan for b
 2. Navigate to wherever your books are stored.
 3. In the settings menu, go to `Screen > Sleep screen > Highlights screensaver`. Select "Add current directory to scannable directories".
 
-You may add as many directories to Highlights Screensaver's watch list as you want, but most users will likely only need to add the top-level directory which contains their library. This is likely the location you've made your home directory.
+You may add as many directories to Highlights Screensaver's watch list as you want, but most users will likely only need to add the top-level directory which contains their library. Note that all subdirectories will also be scanned, so no need to add these individually if you've already added your top-level library directory. This is likely the location you've made your home directory.
 
 4. In the settings menu, go to `Screen > Sleep screen > Highlights screensaver`. Select "Scan book highlights".
 
