@@ -36,7 +36,7 @@ This will perform an initial scan of any existing highlights that Highlights Scr
 5. Configure fonts and theme to your preference, once again under `Screen > Sleep screen > Highlights screensaver`.
 
 ## Compatibility
-Highlights Screensaver has been tested to work on Kobo Libra Colour. It may (should?) work on other devices, but I do not have any others to test with.
+Highlights Screensaver has been tested to work on Kobo Libra Colour running KOReader 2025.10. It may (should?) work on other devices, but I do not have any others to test with.
 
 If you find it works on a different device, please let me know so I can compile a compatibility list. If it doesn't, please open an issue or contribute to the project.
 
