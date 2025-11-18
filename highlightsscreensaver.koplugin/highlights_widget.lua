@@ -20,13 +20,20 @@ function M.buildHighlightsScreensaverWidget(clipping)
 	local theme = config.getTheme()
 	local fonts = config.getFonts()
 	local col_fg, col_bg
-	if theme == config.Theme.DARK then
+
+  -- night mode inverts colours, leading to unintuitive behaviour. instead, i check night mode status
+  -- and manually reverse the colours so that they appear dark/light as specified by the user.
+  local is_night_mode = G_reader_settings:isTrue("night_mode")
+  if (theme == config.Theme.DARK and not is_night_mode) or (theme == config.Theme.LIGHT and is_night_mode) then
+    -- set dark mode settings (will be flipped back to light if is_night_mode)
 		col_fg = Blitbuffer.COLOR_WHITE
 		col_bg = Blitbuffer.COLOR_BLACK
-	else
+  else -- (dark mode and is_night_mode) or (light mode and not is_night_mode)
+    -- set light mode settings (will be flipped bakc to dark if is_night_mode)
 		col_fg = Blitbuffer.COLOR_BLACK
 		col_bg = Blitbuffer.COLOR_WHITE
-	end
+  end
+
 	local width = Screen:getWidth() * 0.90
 
 	local function buildContent(base_font_size)
