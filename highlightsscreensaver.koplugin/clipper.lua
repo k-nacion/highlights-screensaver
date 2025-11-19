@@ -41,7 +41,14 @@ end
 ---@param path string
 ---@return Clipping[]
 function M.extractClippingsFromSidecar(path)
-	local metadata = dofile(path .. "/metadata.epub.lua")
+  local metadata_path
+	for file in lfs.dir(path) do
+		if file:match("^metadata%..-%.lua$") then
+			metadata_path = path .. "/" .. file
+			break
+		end
+	end
+	local metadata = dofile(metadata_path)
 	local authors = metadata.stats.authors
 	local title = metadata.stats.title
 	local clippings = {}
