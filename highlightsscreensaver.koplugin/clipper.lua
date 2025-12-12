@@ -49,11 +49,20 @@ function M.extractClippingsFromSidecar(path)
 		end
 	end
 	local metadata = dofile(metadata_path)
-	local authors = metadata.stats.authors
-	local title = metadata.stats.title
+
+	-- Safely read metadata.stats if it exists
+	local stats = metadata.stats or {}
+
+	-- Fall back to top-level fields if needed
+	local authors = stats.authors or metadata.authors or "Unknown Author"
+	local title = stats.title or metadata.title or "Untitled"
+
 	local clippings = {}
 
-	for _, annotation in ipairs(metadata.annotations) do
+	-- Safely read metadata.annotations if it exists
+	local annotation_list = metadata.annotations or {}
+	for _, annotation in ipairs(annotation_list) do
+
 		local clipping =
 			M.Clipping.new(annotation.text, annotation.note or nil, annotation.datetime, title, authors, true)
 		table.insert(clippings, clipping)
