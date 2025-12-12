@@ -1,215 +1,85 @@
+local _ = require("gettext")
+local FileManager = require("apps/filemanager/filemanager")
 local InfoMessage = require("ui/widget/infomessage")
 local UIManager = require("ui/uimanager")
-local WidgetContainer = require("ui/widget/container/widgetcontainer")
-local Screensaver = require("ui/screensaver")
-local Device = require("device")
-local Screen = Device.screen
-local _ = require("gettext")
-local highlightsWidget = require("highlights_widget")
-local scan = require("scan")
+local lfs = require("libs/libkoreader-lfs")
+
 local clipper = require("clipper")
 local config = require("config")
-local ffiUtil = require("ffi/util")
-local T = ffiUtil.template
-local BD = require("ui/bidi")
-local FontList = require("fontlist")
-local Font = require("ui/font")
-local cre = require("document/credocument"):engineInit()
+local utils = require("utils")
 
-local HIGHLIGHTS_MODE = "highlights"
+local M = {}
 
-local function buildMenuScanHighlights()
-	return {
-		text = _("Scan book highlights"),
-		callback = function()
-			scan.scanHighlights()
-			local popup = InfoMessage:new({
-				text = _("Finished scanning highlights"),
-			})
-			UIManager:show(popup)
-		end,
-	}
-end
-local function buildMenuAddScannableDirectory()
-	return {
-		text = _("Add current directory to scannable directories"),
-		callback = function()
-			scan.addToScannableDirectories()
-		end,
-	}
-end
-
-local function buildMenuDisableHighlight()
-	return {
-		text = _("Disable last shown highlight"),
-		callback = function()
-			local fname = config.getLastShownHighlight()
-			if not fname then
-				return
+---@param scannable_dirs string[]
+---@return string[]
+local function getAllSidecarPaths(scannable_dirs)
+	local sidecars = {}
+	local function searchDir(dir)
+		for member in lfs.dir(dir) do
+			if member == "." or member == ".." then
+				goto continue -- skip current and parent dirs
 			end
-			local clipping = clipper.getClipping(fname)
-			if not clipping then
-				return
+
+			local path = dir .. "/" .. member
+			local attr = lfs.attributes(path)
+			if attr and attr.mode == "directory" then
+				if member:match("%.sdr$") then
+					table.insert(sidecars, path)
+				else
+					searchDir(path)
+				end
 			end
-			clipping.enabled = false
+			::continue::
+		end
+	end
+
+	for _, dir in ipairs(scannable_dirs) do
+		searchDir(dir)
+	end
+
+	return sidecars
+end
+
+function M.scanHighlights()
+	utils.makeDir(utils.getPluginDir())
+	local scannable_directories = config.getScannableDirectories()
+
+	local sidecars = getAllSidecarPaths(scannable_directories)
+	for _, sidecar in ipairs(sidecars) do
+		local clippings = clipper.extractClippingsFromSidecar(sidecar)
+		for _, clipping in ipairs(clippings) do
+			local existingClipping = clipper.getClipping(clipping:filename())
+			if existingClipping then
+				clipping.enabled = existingClipping.enabled
+			end
 			clipper.saveClipping(clipping)
-			local popup = InfoMessage:new({
-				text = _("Disabled highlight: " .. clipping:filename()),
-			})
-			UIManager:show(popup)
-		end,
-	}
-end
-
-local function buildMenuTheme()
-	local dark = {
-		text = _("Dark"),
-		checked_func = function()
-			return config.getTheme() == config.Theme.DARK
-		end,
-		callback = function()
-			return config.setTheme(config.Theme.DARK)
-		end,
-		radio = true,
-	}
-	local light = {
-		text = _("Light"),
-		checked_func = function()
-			return config.getTheme() == config.Theme.LIGHT
-		end,
-		callback = function()
-			return config.setTheme(config.Theme.LIGHT)
-		end,
-		radio = true,
-	}
-	return {
-		text_func = function()
-			local theme = config.getTheme()
-			local theme_name = theme:sub(1, 1):upper() .. theme:sub(2)
-			return T(_("Theme: %1"), _(theme_name))
-		end,
-		sub_item_table = { dark, light },
-	}
-end
-
-local function buildMenuFonts()
-	local all_fonts = FontList:getFontList()
-	local curr_fonts = config.getFonts()
-
-	local function buildFontSubmenu(display_name, font_key)
-		local submenu = {
-			text_func = function()
-				return display_name .. ": " .. curr_fonts[font_key]
-			end,
-			sub_item_table = {},
-		}
-
-		for _, font_path in ipairs(all_fonts) do
-			local _, font_filename = require("util").splitFilePathName(font_path)
-			table.insert(submenu.sub_item_table, {
-				text = font_filename,
-				callback = function()
-					curr_fonts[font_key] = font_filename
-					config.setFonts(curr_fonts)
-				end,
-				checked_func = function()
-					return font_filename == curr_fonts[font_key]
-				end,
-			})
-		end
-
-		return submenu
-	end
-
-	local quote = buildFontSubmenu("Quote", "quote")
-	local author = buildFontSubmenu("Author", "author")
-	local note = buildFontSubmenu("Note", "note")
-	return {
-		text = "Fonts",
-		sub_item_table = { quote, author, note },
-	}
-end
-
--- patch `dofile` to add a highlights mode
-local orig_dofile = dofile
-_G.dofile = function(filepath)
-	local result = orig_dofile(filepath)
-
-	if filepath and filepath:match("screensaver_menu%.lua$") then
-		if result and result[1] and result[1].sub_item_table then
-			local wallpaper_submenu = result[1].sub_item_table
-
-			table.insert(result, 3, {
-				text = _("Highlights screensaver"),
-				sub_item_table = {
-					buildMenuScanHighlights(),
-					buildMenuAddScannableDirectory(),
-					buildMenuDisableHighlight(),
-					buildMenuTheme(),
-					buildMenuFonts(),
-				},
-			})
-
-			table.insert(wallpaper_submenu, 6, {
-				text = _("Show highlights screensaver"),
-				checked_func = function()
-					return G_reader_settings:readSetting("screensaver_type") == HIGHLIGHTS_MODE
-				end,
-				callback = function()
-					G_reader_settings:saveSetting("screensaver_type", HIGHLIGHTS_MODE)
-				end,
-				radio = true,
-			})
 		end
 	end
 
-	return result
+	local t = os.date("*t")
+	local today = string.format("%04d-%02d-%02d", t.year, t.month, t.day)
+	config.setLastScannedDate(today)
 end
 
--- patch the screensaver's `show` function to handle the new highlights mode
-local og_screensaver_show = Screensaver.show
-Screensaver.show = function(self)
-	if self.screensaver_type == HIGHLIGHTS_MODE then
-		if self.screensaver_widget then
-			UIManager:close(self.screensaver_widget)
-			self.screensaver_widget = nil
+function M.addToScannableDirectories()
+	local curr_dir = FileManager.instance.file_chooser.path
+	local scannable_directories = config.getScannableDirectories()
+	table.insert(scannable_directories, curr_dir)
+
+	local unique_dirs = {}
+	local seen = {}
+	for _, dir in ipairs(scannable_directories) do
+		if not seen[dir] then
+			table.insert(unique_dirs, dir)
+			seen[dir] = true
 		end
-
-		Device.screen_saver_mode = true
-
-		local rotation_mode = Screen:getRotationMode()
-		Device.orig_rotation_mode = rotation_mode
-		if bit.band(rotation_mode, 1) == 1 then
-			Screen:setRotationMode(Screen.DEVICE_ROTATED_UPRIGHT)
-		else
-			Device.orig_rotation_mode = nil
-		end
-
-		local last_scanned = config.getLastScannedDate()
-		local t = os.date("*t")
-		local today = string.format("%04d-%02d-%02d", t.year, t.month, t.day)
-		if not last_scanned or last_scanned < today then
-			scan.scanHighlights()
-		end
-
-		local clipping = clipper.getRandomClipping()
-		config.setLastShownHighlight(clipping:filename())
-		self.screensaver_widget = highlightsWidget.buildHighlightsScreensaverWidget(clipping)
-		self.screensaver_widget.modal = true
-		self.screensaver_widget.dithered = true
-		UIManager:show(self.screensaver_widget, "full")
-
-		return
 	end
 
-	og_screensaver_show(self)
+	config.setScannableDirectories(unique_dirs)
+	local popup = InfoMessage:new({
+		text = _("Added to scannable directories: " .. curr_dir),
+	})
+	UIManager:show(popup)
 end
 
-local HighlightsScreensaver = WidgetContainer:extend({
-	name = "Highlights Screensaver",
-	is_doc_only = false,
-})
-
-function HighlightsScreensaver:init() end
-
-return HighlightsScreensaver
+return M
