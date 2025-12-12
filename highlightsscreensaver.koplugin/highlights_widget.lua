@@ -84,7 +84,11 @@ function M.buildHighlightsScreensaverWidget(clipping)
 			source_text,
 		})
 
-		if clipping.note and clipping.note ~= "" then
+				-- NOTES HANDLING BASED ON SETTING
+		local notes_option = G_reader_settings:readSetting("show_notes_option") or "full"
+
+		if clipping.note and clipping.note ~= "" and notes_option ~= "disable" then
+			-- Insert separator (only if notes are shown)
 			local separator = LineWidget:new({
 				dimen = Geom:new({
 					w = width,
@@ -92,8 +96,21 @@ function M.buildHighlightsScreensaverWidget(clipping)
 				}),
 				background = col_fg,
 			})
+
+			local note_text_value = clipping.note
+
+			-- Truncate to 2 lines
+			if notes_option == "short" then
+				-- Roughly estimate characters per line
+				-- Simple + safe
+				local max_chars = 100  -- adjust if needed
+				if #note_text_value > max_chars then
+					note_text_value = note_text_value:sub(1, max_chars) .. "..."
+				end
+			end
+
 			local note_text = TextBoxWidget:new({
-				text = clipping.note,
+				text = note_text_value,
 				face = Font:getFace(fonts.note, fontSizeAlt()),
 				width = width,
 				fgcolor = col_fg,
@@ -101,11 +118,14 @@ function M.buildHighlightsScreensaverWidget(clipping)
 				alignment = "left",
 				line_height = 0.4,
 			})
+
+			-- Insert into content
 			table.insert(content, VerticalSpan:new({ width = 32 }))
 			table.insert(content, separator)
 			table.insert(content, VerticalSpan:new({ width = 24 }))
 			table.insert(content, note_text)
 		end
+
 
 		return content
 	end

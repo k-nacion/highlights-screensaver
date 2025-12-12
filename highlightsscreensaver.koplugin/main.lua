@@ -21,12 +21,10 @@ local Font = require("ui/font")
 
 local HIGHLIGHTS_MODE = "highlights"
 
--- Orientation modes
 local ORIENT_DEFAULT = "default"
 local ORIENT_PORTRAIT = "portrait"
 local ORIENT_LANDSCAPE = "landscape"
 
--- Safe rotation constants
 local ROT_UPRIGHT = Screen.DEVICE_ROTATED_UPRIGHT or 0
 local ROT_LEFT    = Screen.DEVICE_ROTATED_LEFT    or 1
 local ROT_DOWN    = Screen.DEVICE_ROTATED_DOWN    or 2
@@ -190,6 +188,55 @@ local function buildMenuToggleOrientation()
 end
 
 -------------------------------------------------------------------------
+-- NEW: SHOW NOTES OPTION MENU BUILDER
+-------------------------------------------------------------------------
+
+local function buildMenuShowNotesOption()
+	return {
+		text = _("Show Notes Option"),
+		sub_item_table = {
+			{
+				text = _("Disable"),
+				radio = true,
+				checked_func = function()
+					return G_reader_settings:readSetting("show_notes_option") == "disable"
+				end,
+				callback = function()
+					G_reader_settings:saveSetting("show_notes_option", "disable")
+					UIManager:show(InfoMessage:new({ text = _("Notes disabled") }))
+				end,
+			},
+			{
+				text = _("Full"),
+				radio = true,
+				checked_func = function()
+					return G_reader_settings:readSetting("show_notes_option") == "full"
+				end,
+				callback = function()
+					G_reader_settings:saveSetting("show_notes_option", "full")
+					UIManager:show(InfoMessage:new({ text = _("Showing full notes") }))
+				end,
+			},
+			{
+				text = _("Short"),
+				radio = true,
+				checked_func = function()
+					return G_reader_settings:readSetting("show_notes_option") == "short"
+				end,
+				callback = function()
+					G_reader_settings:saveSetting("show_notes_option", "short")
+					UIManager:show(InfoMessage:new({ text = _("Notes shortened") }))
+				end,
+			},
+		}
+	}
+end
+
+
+
+
+
+-------------------------------------------------------------------------
 -- PATCH `dofile` TO INJECT MENU
 -------------------------------------------------------------------------
 
@@ -201,6 +248,7 @@ _G.dofile = function(filepath)
 		if result and result[1] and result[1].sub_item_table then
 			local wallpaper_submenu = result[1].sub_item_table
 
+			-- Insert our highlight screensaver settings
 			table.insert(result, 3, {
 				text = _("Highlights screensaver"),
 				sub_item_table = {
@@ -210,9 +258,13 @@ _G.dofile = function(filepath)
 					buildMenuTheme(),
 					buildMenuFonts(),
 					buildMenuToggleOrientation(),
+
+					-- ADDED: Show Notes Option
+					buildMenuShowNotesOption(),
 				},
 			})
 
+			-- Insert the radio button selector under the wallpaper menu
 			table.insert(wallpaper_submenu, 6, {
 				text = _("Show highlights screensaver"),
 				radio = true,
@@ -244,20 +296,18 @@ Screensaver.show = function(self)
 
 		Device.screen_saver_mode = true
 
-		-- Orientation based on user setting
 		local mode = G_reader_settings:readSetting("highlights_orientation") or ORIENT_DEFAULT
 		local current = Screen:getRotationMode()
 		Device.orig_rotation_mode = current
 
 		if mode == ORIENT_DEFAULT then
-			Device.orig_rotation_mode = nil -- keep KOReader's orientation
+			Device.orig_rotation_mode = nil
 		elseif mode == ORIENT_PORTRAIT then
 			Screen:setRotationMode(ROT_UPRIGHT)
 		elseif mode == ORIENT_LANDSCAPE then
 			Screen:setRotationMode(ROT_LEFT)
 		end
 
-		-- Scan daily
 		local last_scanned = config.getLastScannedDate()
 		local t = os.date("*t")
 		local today = string.format("%04d-%02d-%02d", t.year, t.month, t.day)
@@ -292,4 +342,5 @@ local HighlightsScreensaver = WidgetContainer:extend({
 function HighlightsScreensaver:init() end
 
 return HighlightsScreensaver
+
 
