@@ -103,7 +103,7 @@ function M.buildHighlightsScreensaverWidget(clipping)
 			if notes_option == "short" then
 				-- Roughly estimate characters per line
 				-- Simple + safe
-				local max_chars = 70  -- adjust if needed
+				local max_chars = G_reader_settings:readSetting("show_notes_limit") or 70  -- get its value from global settings instead rather than hardcoding it. 
 				if #note_text_value > max_chars then
 					note_text_value = note_text_value:sub(1, max_chars) .. "..."
 				end

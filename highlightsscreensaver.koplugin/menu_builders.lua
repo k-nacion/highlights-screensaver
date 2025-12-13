@@ -9,6 +9,8 @@ local FontList = require("fontlist")
 local Font = require("ui/font")
 local ffiUtil = require("ffi/util")
 local T = ffiUtil.template
+local init = require("init")  -- import keys and defaults
+
 
 local Device = require("device")
 local Screen = Device.screen
@@ -218,6 +220,28 @@ local function buildMenuShowNotesOption()
 					UIManager:show(InfoMessage:new({ text = _("Notes shortened") }))
 				end,
 			},
+            {
+                 text_func = function()
+					return T(
+						_("Character limit for short notes: %1"),
+						G_reader_settings:readSetting("show_notes_limit") or 70
+					)
+				end,
+				enabled_func = function()
+					return G_reader_settings:readSetting("show_notes_option") == "short"
+				end,
+				keep_menu_open = true,
+				callback = function(touchmenu_instance)
+					local showShortNoteLimitSpin = require("widgets/short_note_limit_spin")
+
+					showShortNoteLimitSpin(
+						G_reader_settings:readSetting("show_notes_limit") or 70,
+						function()
+							touchmenu_instance:updateItems()
+						end
+					)
+				end,
+            },
 		}
 	}
 end
