@@ -35,8 +35,10 @@ end
 ---@param self Clipping
 ---@return string
 function M.Clipping:filename()
-	return utils.normalise(self.source_title .. " " .. self.created_at .. ".json")
+    local index_part = self.source_index and ("_" .. self.source_index) or ""
+    return utils.normalise(self.source_title .. " " .. self.created_at .. index_part .. ".json")
 end
+
 
 ---@param path string
 ---@return Clipping[]
