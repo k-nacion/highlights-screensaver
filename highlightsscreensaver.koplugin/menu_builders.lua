@@ -23,6 +23,8 @@ local ORIENT_LANDSCAPE = "landscape"
 -- MENU BUILDERS
 -------------------------------------------------------------------------
 
+
+
 local function buildMenuScanHighlights()
 	return {
 		text = _("Scan book highlights"),
@@ -105,6 +107,31 @@ local function buildMenuTheme()
         sub_item_table = { system_theme, dark, light },  -- system is first
     }
 end
+
+local DirectoryScanner = require("widgets/directory_scanner")
+local DirectoryPicker = require("widgets/directory_picker")
+
+local function buildMenuImportExternalQuotes()
+    return {
+        text_func = function()
+            local dir = config.getExternalQuotesDirectory()
+            if not dir then
+                return _("Import external quotes")
+            end
+            local folder_name = dir:match("([^/]+)$") or dir
+            return _("External Quotes Location") .. ": " .. folder_name
+        end,
+        callback = function()
+             DirectoryPicker.pickDirectory(function(dir_path)
+				config.setExternalQuotesDirectory(dir_path) -- save last folder
+				local externalQuotes = require("external_quotes")
+				externalQuotes.importQuotes(dir_path)
+			end)
+        end,
+        separator = true,
+    }
+end
+
 
 
 local function buildMenuFonts()
@@ -279,6 +306,7 @@ local function patchDofileMenus()
                         buildMenuFonts(),
                         buildMenuToggleOrientation(),
                         buildMenuShowNotesOption(),
+						buildMenuImportExternalQuotes(),
                     },
 				})
 

@@ -45,6 +45,7 @@ local function load()
         last_scanned_date = nil,
         last_shown_highlight = nil,
         fonts = default_fonts,
+		external_quotes_directory = nil,
     }, Config)
 
     local file = io.open(getConfigFilePath(), "r")
@@ -65,6 +66,7 @@ local function load()
         last_scanned_date = data.last_scanned_date or nil,
         last_shown_highlight = data.last_shown_highlight or nil,
         fonts = data.fonts or default_fonts,
+		external_quotes_directory = data.external_quotes_directory or nil,
     }, Config)
 end
 
@@ -141,6 +143,20 @@ function M.setLastShownHighlight(filename)
 	config.last_shown_highlight = filename
 	config:save()
 end
+
+---@return string|nil
+function M.getExternalQuotesDirectory()
+    local config = load()
+    return config.external_quotes_directory
+end
+
+---@param dir string
+function M.setExternalQuotesDirectory(dir)
+    local config = load()
+    config.external_quotes_directory = dir
+    config:save()
+end
+
 
 ---@param fonts Fonts
 function M.setFonts(fonts)

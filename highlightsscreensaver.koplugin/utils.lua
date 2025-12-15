@@ -1,9 +1,9 @@
+-- utils.lua
 local Device = require("device")
 local lfs = require("libs/libkoreader-lfs")
 
 local M = {}
 
----@return string
 function M.getDefaultRootDir()
 	if Device:isCervantes() or Device:isKobo() then
 		return "/mnt"
@@ -14,17 +14,14 @@ function M.getDefaultRootDir()
 	end
 end
 
----@return string
 function M.getPluginDir()
 	return M.getDefaultRootDir() .. "/onboard/highlights-screensaver"
 end
 
----@return string
 function M.getClippingsDir()
 	return M.getPluginDir() .. "/clippings"
 end
 
----@param path string
 function M.makeDir(path)
 	local current = ""
 	for dir in path:gmatch("[^/]+") do
@@ -40,12 +37,10 @@ function M.makeDir(path)
 	return true
 end
 
----@param s string
----@return string
 function M.normalise(s)
 	s = s:match("^%s*(.-)%s*$") -- trim
 	s = s:lower()
-	s = s:gsub("%s+", "_") -- replace spaces for underscores
+	s = s:gsub("%s+", "_") -- spaces → underscore
 	s = s:gsub("[^%w_%-%.]", "") -- remove unsafe filename chars
 	return s
 end
