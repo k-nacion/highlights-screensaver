@@ -13,26 +13,57 @@ local VerticalSpan = require("ui/widget/verticalspan")
 local HorizontalGroup = require("ui/widget/horizontalgroup")
 local HorizontalSpan = require("ui/widget/horizontalspan")
 local LineWidget = require("ui/widget/linewidget")
+local logger = require("logger")
+
 
 local M = {}
 
 function M.buildHighlightsScreensaverWidget(clipping)
 	local theme = config.getTheme()
 	local fonts = config.getFonts()
-	local col_fg, col_bg
+	local theme_setting = config.getTheme()
 
-  -- night mode inverts colours, leading to unintuitive behaviour. instead, i check night mode status
-  -- and manually reverse the colours so that they appear dark/light as specified by the user.
-  local is_night_mode = G_reader_settings:isTrue("night_mode")
-  if (theme == config.Theme.DARK and not is_night_mode) or (theme == config.Theme.LIGHT and is_night_mode) then
-    -- set dark mode settings (will be flipped back to light if is_night_mode)
+	local col_fg, col_bg
+	local is_night_mode = G_reader_settings:isTrue("night_mode")
+	local theme = config.getTheme()
+
+	logger.info("Theme setting = " .. tostring(theme))
+	logger.info("night_mode = " .. tostring(is_night_mode))
+
+	if theme == config.Theme.SYSTEM then
+			logger.info("Branch = SYSTEM")
+
+			
+			if is_night_mode then
+				-- Draw LIGHT so it inverts to DARK
+				col_fg = Blitbuffer.COLOR_BLACK
+				col_bg = Blitbuffer.COLOR_WHITE
+				logger.info("SYSTEM result = DARK (inverted by night mode)")
+			else
+				-- Draw LIGHT normally
+				col_fg = Blitbuffer.COLOR_BLACK
+				col_bg = Blitbuffer.COLOR_WHITE
+				logger.info("SYSTEM result = LIGHT")
+			end
+
+	elseif (theme == config.Theme.DARK and not is_night_mode)
+		or (theme == config.Theme.LIGHT and is_night_mode) then
+
+		logger.info("Branch = INVERT → DARK")
 		col_fg = Blitbuffer.COLOR_WHITE
 		col_bg = Blitbuffer.COLOR_BLACK
-  else -- (dark mode and is_night_mode) or (light mode and not is_night_mode)
-    -- set light mode settings (will be flipped bakc to dark if is_night_mode)
+
+	else
+		logger.info("Branch = INVERT → LIGHT")
 		col_fg = Blitbuffer.COLOR_BLACK
 		col_bg = Blitbuffer.COLOR_WHITE
-  end
+	end
+
+
+
+
+
+
 
 	local width = Screen:getWidth() * 0.90
 

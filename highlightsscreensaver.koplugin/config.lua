@@ -3,13 +3,14 @@ local utils = require("utils")
 
 local M = {}
 
----@alias Theme
----| '"dark"'
----| '"light"'
 M.Theme = {
-	DARK = "dark",
-	LIGHT = "light",
+    SYSTEM = "system",   -- new system theme
+    DARK = "dark",
+    LIGHT = "light",
 }
+
+
+
 
 ---@class Fonts
 ---@field quote string
@@ -31,41 +32,42 @@ local function getConfigFilePath()
 	return utils.getPluginDir() .. "/config.json"
 end
 
----@return Config
 local function load()
-	local default_fonts = setmetatable({
-		quote = "NotoSerif-BoldItalic.ttf",
-		author = "NotoSerif-Regular.ttf",
-		note = "NotoSerif-Bold.ttf",
-	}, Fonts)
-	local default_config = setmetatable({
-		theme = M.Theme.DARK,
-		scannable_directories = {},
-		last_scanned_date = nil,
-		last_shown_highlight = nil,
-		fonts = default_fonts,
-	}, Config)
+    local default_fonts = setmetatable({
+        quote = "NotoSerif-BoldItalic.ttf",
+        author = "NotoSerif-Regular.ttf",
+        note = "NotoSerif-Bold.ttf",
+    }, Fonts)
+    
+    local default_config = setmetatable({
+        theme = M.Theme.SYSTEM,  -- default theme is system
+        scannable_directories = {},
+        last_scanned_date = nil,
+        last_shown_highlight = nil,
+        fonts = default_fonts,
+    }, Config)
 
-	local file = io.open(getConfigFilePath(), "r")
-	if not file then
-		return default_config
-	end
+    local file = io.open(getConfigFilePath(), "r")
+    if not file then
+        return default_config
+    end
 
-	local content = file:read("*a")
-	file:close()
-	local data = json.decode(content)
-	if not data then
-		return default_config
-	end
+    local content = file:read("*a")
+    file:close()
+    local data = json.decode(content)
+    if not data then
+        return default_config
+    end
 
-	return setmetatable({
-		theme = data.theme or M.Theme.DARK,
-		scannable_directories = data.scannable_directories or {},
-		last_scanned_date = data.last_scanned_date or nil,
-		last_shown_highlight = data.last_shown_highlight or nil,
-		fonts = data.fonts or default_fonts,
-	}, Config)
+    return setmetatable({
+        theme = data.theme or M.Theme.SYSTEM,  -- default to system
+        scannable_directories = data.scannable_directories or {},
+        last_scanned_date = data.last_scanned_date or nil,
+        last_shown_highlight = data.last_shown_highlight or nil,
+        fonts = data.fonts or default_fonts,
+    }, Config)
 end
+
 
 local function deep_copy_no_mt(tbl)
 	local copy = {}
