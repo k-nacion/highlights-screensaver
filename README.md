@@ -111,11 +111,15 @@ The following features are planned for future releases. Feedback and contributio
   * Option to keep a specific quote or highlight persistent across sleep cycles.
   * Ideal for displaying a favorite quote long-term.
 
-* **Skip duplicate external quotes on import**
+* **Skip existing quotes when importing**  
+  Avoid importing duplicate quotes when re-importing text files.  
+  **Current workaround:**  
+  1. Go to your KOReader root directory.  
+  2. Navigate to `onboard/highlights-screensaver/clippings`.  
+  3. Delete the JSON files corresponding to your quotes (the filenames will match the source text file).  
+     *Do not delete other files in this folder.*  
+  4. Re-import your quotes from KOReader. This will import all quotes including any new entries without creating duplicates from old quotes.
 
-  * Detect existing quotes and avoid importing duplicates.
-  * Useful when adding new entries to existing quote files.
-  * Current workaround: delete previously imported quotes and re-import the folder.
 
 * **Highlight / quote sequencing options**
 
@@ -146,5 +150,3 @@ If you test this plugin on a different device and encounter issues (or confirm i
 ---
 
 ⭐ If you enjoy Highlights Screensaver, please consider leaving a star.
-
-```
