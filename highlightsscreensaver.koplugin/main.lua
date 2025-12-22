@@ -1,5 +1,5 @@
 local WidgetContainer = require("ui/widget/container/widgetcontainer")
-local menu_builders = require("menu_builders")
+local menu_builders = require("menu_builders._menu_builders")
 local screensaver_patch = require("screensaver_patch")
 
 -- Patch Screensaver.show

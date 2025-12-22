@@ -25,7 +25,6 @@ function M.buildHighlightsScreensaverWidget(clipping)
 
 	local col_fg, col_bg
 	local is_night_mode = G_reader_settings:isTrue("night_mode")
-	local theme = config.getTheme()
 
 	logger.info("Theme setting = " .. tostring(theme))
 	logger.info("night_mode = " .. tostring(is_night_mode))
@@ -62,10 +61,17 @@ function M.buildHighlightsScreensaverWidget(clipping)
 
 
 
+	local text_alignment = G_reader_settings:readSetting("hs_text_alignment") or "left"
+	local justified = G_reader_settings:isTrue("hs_justified")
+	local lh_raw = G_reader_settings:readSetting("hs_line_height") or 0
+	-- allow full range from 0 to 160
+	lh_raw = math.min(math.max(lh_raw, 0), 160)
+	line_height = lh_raw / 100
 
 
+	local width_percent = G_reader_settings:readSetting("hs_width_percent") or 90
+	local width = Screen:getWidth() * (width_percent / 100)
 
-	local width = Screen:getWidth() * 0.90
 
 	local function buildContent(base_font_size)
 		local function fontSizeAlt()
@@ -76,9 +82,9 @@ function M.buildHighlightsScreensaverWidget(clipping)
 			text = clipping.text,
 			face = Font:getFace(fonts.quote, base_font_size),
 			width = width,
-			alignment = "left",
-			justified = false,
-			line_height = 0.5,
+			alignment = text_alignment,
+			justified = justified,
+			line_height = line_height,
 			fgcolor = col_fg,
 			bgcolor = col_bg,
 		})
@@ -146,8 +152,8 @@ function M.buildHighlightsScreensaverWidget(clipping)
 				width = width,
 				fgcolor = col_fg,
 				bgcolor = col_bg,
-				alignment = "left",
-				line_height = 0.4,
+				alignment = 0,
+				line_height = line_height,
 			})
 
 			-- Insert into content
@@ -161,9 +167,12 @@ function M.buildHighlightsScreensaverWidget(clipping)
 		return content
 	end
 
-	local font_size_base = 48
+	local font_size_base = G_reader_settings:readSetting("hs_font_size_base") or 48
+	local font_size_min  = G_reader_settings:readSetting("hs_font_size_min") or 12
 	local content = buildContent(font_size_base)
-	while content:getSize().h > Screen:getHeight() * 0.95 and font_size_base > 12 do
+
+	-- Shrink font if it overflows, but never go below min font size
+	while content:getSize().h > Screen:getHeight() * 0.95 and font_size_base > font_size_min do
 		font_size_base = font_size_base - 2
 		content = buildContent(font_size_base)
 	end
