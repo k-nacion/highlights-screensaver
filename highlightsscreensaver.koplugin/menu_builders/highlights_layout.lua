@@ -96,7 +96,7 @@ local function buildMenuHighlightsLayoutOptions()
                     Spin{
                         title = _("Quote Width Percentage"),
                         value = G_reader_settings:readSetting("hs_width_percent") or 90,
-                        min = 70,
+                        min = 60,
                         max = 95,
                         step = 1,
                         default = 90,
@@ -151,6 +151,29 @@ local function buildMenuHighlightsLayoutOptions()
                         default = 12,
                         onApply = function(value)
                             G_reader_settings:saveSetting("hs_font_size_min", value)
+                            touchmenu_instance:updateItems()
+                        end,
+                    }
+                end,
+            },
+
+            -- Border Spacing 
+            {
+                text_func = function()
+                    return _("Border Spacing: ")
+                        .. (G_reader_settings:readSetting("hs_border_spacing") or 24)
+                end,
+                keep_menu_open = true,
+                callback = function(touchmenu_instance)
+                    Spin{
+                        title = _("Spacing between border and text"),
+                        value = G_reader_settings:readSetting("hs_border_spacing") or 24,
+                        min = 0,
+                        max = 40,
+                        step = 2,
+                        default = 24,
+                        onApply = function(value)
+                            G_reader_settings:saveSetting("hs_border_spacing", value)
                             touchmenu_instance:updateItems()
                         end,
                     }

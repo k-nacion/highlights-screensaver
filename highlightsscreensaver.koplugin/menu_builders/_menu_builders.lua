@@ -12,6 +12,7 @@ local notesMenus = require("menu_builders.notes_menu")
 local importMenus = require("menu_builders.import_quotes_menu")
 local orientationMenus = require("menu_builders.orientation_menu")
 local disableHighlightMenus = require("menu_builders.disable_highlight_menu")
+local notesLayoutMenus = require("menu_builders.notes_layout")
 
 -- Constants
 local HIGHLIGHTS_MODE = "highlights"
@@ -39,6 +40,7 @@ local function patchDofileMenus()
                         themeMenus.buildMenuTheme(),
                         fontsMenus.buildMenuFonts(),
                         highlightsMenus.buildMenuHighlightsLayoutOptions(),
+                        notesLayoutMenus.buildMenuNotesLayoutOptions(),
                         orientationMenus.buildMenuToggleOrientation(),
                         notesMenus.buildMenuShowNotesOption(),
                         importMenus.buildMenuImportExternalQuotes(),
