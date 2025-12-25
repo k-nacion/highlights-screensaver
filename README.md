@@ -17,23 +17,6 @@ All changes are released under **GNU GPL v3.0**.
 
 ---
 
-## Version & Release Notes
-
-**v1.1.0-community** – First community fork release  
-
-**New features in this fork:**
-
-- **System theme support** – screensaver can follow the device’s theme  
-- **Screensaver orientation options** – Current Book, Portrait, Landscape  
-- **Notes display options** – Disable, Full (default), Short (with character limit)  
-- **Import highlights/quotes from text files** – combine book highlights with external quotes  
-- **Highlights layout configuration** – customize the appearance of the screensaver  
-- Minor bug fixes and code improvements  
-
-> Compatible with KOReader 2025.10 and above.
-
----
-
 ## Example images
 
 | Light Theme 1 | Light Theme 2 | Dark Theme 1 |
