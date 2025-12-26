@@ -1,4 +1,4 @@
-# Highlights Screensaver – Community Fork v1.1.0-community
+# Highlights Screensaver – Community Fork
 
 A KOReader plugin to show a random highlight or quote on your screensaver.  
 This fork provides additional maintenance, fixes, and new features for the community.
