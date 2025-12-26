@@ -7,13 +7,13 @@ This fork provides additional maintenance, fixes, and new features for the commu
 
 ## ⚠️ Disclaimer / Community Statement
 
-This repository is a **community-maintained fork** of [Highlights Screensaver](https://github.com/juancoquet/highlights-screensaver) by Juancoquet.  
+This repository is a **community-maintained fork** of [Highlights Screensaver](https://github.com/juancoquet/highlights-screensaver) by Juancoquet.
 
-- All functional changes have been submitted upstream as pull requests.  
+- All functional changes were previously submitted upstream as pull requests.  
+- Since the original PR has not been merged, this fork is now maintained independently.  
 - This fork provides additional maintenance, fixes, and new features for the community.  
-- If the original maintainer integrates the changes, this fork can be merged, synced, or retired accordingly.  
 
-All changes are released under **GNU GPL v3.0**.
+All changes are released under **GNU GPL v3.0**, and users are welcome to use this fork freely.
 
 ---
 
