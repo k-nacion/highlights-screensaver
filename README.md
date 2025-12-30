@@ -1,6 +1,6 @@
 # Highlights Screensaver – Community Fork
 
-A KOReader plugin to show a random highlight or quote on your screensaver.  
+A KOReader plugin to show a random highlight or quote on your screensaver.
 This fork provides additional maintenance, fixes, and new features for the community.
 
 ---
@@ -9,9 +9,9 @@ This fork provides additional maintenance, fixes, and new features for the commu
 
 This repository is a **community-maintained fork** of [Highlights Screensaver](https://github.com/juancoquet/highlights-screensaver) by Juancoquet.
 
-- All functional changes were previously submitted upstream as pull requests.  
-- Since the original PR has not been merged, this fork is now maintained independently.  
-- This fork provides additional maintenance, fixes, and new features for the community.  
+* All functional changes were previously submitted upstream as pull requests.
+* Since the original PR has not been merged, this fork is now maintained independently.
+* This fork provides additional maintenance, fixes, and new features for the community.
 
 All changes are released under **GNU GPL v3.0**, and users are welcome to use this fork freely.
 
@@ -19,64 +19,75 @@ All changes are released under **GNU GPL v3.0**, and users are welcome to use th
 
 ## Example images
 
-| Light Theme 1 | Light Theme 2 | Dark Theme 1 |
-|---------------|---------------|--------------|
-| <img src="images/light_01.JPG" alt="Light theme example 1" width="250"/> | <img src="images/light_02.JPG" alt="Light theme example 2" width="250"/> | <img src="images/dark_01.JPG" alt="Dark theme example 2" width="250"/> |
+| Light Theme 1                                                            | Light Theme 2                                                            | Dark Theme 1                                                         |
+| ------------------------------------------------------------------------ | ------------------------------------------------------------------------ | -------------------------------------------------------------------- |
+| <img src="images/light_01.JPG" alt="Light theme example 1" width="250"/> | <img src="images/light_02.JPG" alt="Light theme example 2" width="250"/> | <img src="images/dark_01.JPG" alt="Dark theme example" width="250"/> |
 
 ---
 
 ## Features
 
-- Shows the original quote, source (book & author), and any notes attached to a highlight.
-- Automatically stays up to date with your latest highlights.
-- Dynamically resizes text to fit varying lengths.
-- Independent font selection for quote, source, and notes.
-- Theme support: Light, Dark, System (follows device theme)
-- Orientation support: Current Book, Portrait, Landscape
-- Notes display options: Disable, Full, Short
-- Import **external quotes** from text files
-- Highlights layout configuration options
-- Disable individual highlights to prevent repetition
+* Shows the original quote, source (book & author), and any notes attached to a highlight
+* Automatically stays up to date with your latest highlights
+* Dynamically resizes text to fit varying content lengths
+* Independent font selection for quote, source, and notes
+* Theme support: Light, Dark, System (follows device theme)
+* Orientation support: Current Book, Portrait, Landscape
+* Notes display options: Disable, Full, Short
+* Import **external quotes** from text files
+* Highlights layout configuration options
+* Disable individual highlights to prevent repetition
 
 ---
 
 ## Installation & Setup
 
-1. Download the latest `HighlightsScreensaver.zip` from the [releases page](https://github.com/k-nacion/highlights-screensaver/releases).  
-2. Copy `highlightsscreensaver.koplugin` into `koreader/plugins/` on your device.  
-3. Restart KOReader.
+1. Download the latest release archive from the
+   [Releases page](https://github.com/k-nacion/highlights-screensaver/releases).
+2. Extract the archive.
+3. Copy `highlightsscreensaver.koplugin` into `koreader/plugins/` on your device.
+4. Restart KOReader.
+
+> The release archive name may change between versions.
+> Always extract and copy the `highlightsscreensaver.koplugin` folder.
 
 ### Initial Setup
 
-1. Open settings → `Screen > Sleep screen > Wallpaper`  
+1. Open `Settings → Screen → Sleep screen → Wallpaper`
 2. Select **“Show highlights screensaver”**
 
 ### Configure Scannable Directories
 
-1. Navigate to your library folder.  
-2. Open `Screen > Sleep screen > Highlights screensaver`  
-3. Select **“Add current directory to scannable directories”**  
+1. Navigate to your library folder
+2. Open `Screen → Sleep screen → Highlights screensaver`
+3. Select **“Add current directory to scannable directories”**
 
 > Subdirectories are scanned automatically.
 
 ### Scan Book Highlights
 
-1. Go to `Screen > Sleep screen > Highlights screensaver`  
-2. Select **“Scan book highlights”**  
+1. Go to `Screen → Sleep screen → Highlights screensaver`
+2. Select **“Scan book highlights”**
 
-Automatic scanning occurs once per day; manual scan can be triggered anytime.
+Automatic scanning occurs once per day.
+A manual scan can be triggered at any time.
 
 ---
 
 ## Customize Appearance & Behavior
 
-- Change fonts  
-- Set theme mode (Light, Dark, System)  
-- Choose orientation (Current Book, Portrait, Landscape)  
-- Configure notes display (Disable, Full, Short with character limit)  
-- Adjust highlights layout configuration  
+* Change fonts
+* Set theme mode (Light, Dark, System)
+* Choose orientation (Current Book, Portrait, Landscape)
+* Configure notes display:
 
-All options under: `Screen > Sleep screen > Highlights screensaver`
+  * Disable
+  * Full
+  * Short (with character limit)
+* Adjust highlights layout configuration
+
+All options are available under:
+`Screen → Sleep screen → Highlights screensaver`
 
 ---
 
@@ -84,14 +95,16 @@ All options under: `Screen > Sleep screen > Highlights screensaver`
 
 ### How It Works
 
-1. Create a directory for quote files  
-2. Add one or more `*.txt` files (each file = collection of quotes)  
-3. All quote files must be in the same folder  
+1. Create a directory for quote files
+2. Add one or more `*.txt` files
+
+   * Each file represents a collection of quotes
+3. All quote files must be in the same folder
 
 ### File Format
 
-- Each quote separated by `======`  
-- Use `~` to indicate author/source  
+* Each quote is separated by `======`
+* Use `~` to indicate the author or source
 
 ```txt
 ======
@@ -100,25 +113,25 @@ Life is what happens when you're busy making other plans.
 ======
 Happiness comes from your own actions.
 ~ Dalai Lama
-````
+```
 
 ### Importing
 
-1. Go to `Screen > Sleep screen > Highlights screensaver`
+1. Go to `Screen → Sleep screen → Highlights screensaver`
 2. Select **“Import external quotes”**
-3. Choose the folder containing your files
+3. Choose the folder containing your quote files
 
-> ⚠️ Note: This feature works but is still being enhanced in future updates.
+> ⚠️ Note: This feature works but is still being refined in future updates.
 
 ---
 
 ## Roadmap / Planned Features
 
-- [ ] **Manage scannable directories** – view, remove, edit  
-- [ ] **Pause / pin a highlight** – display favorite quotes persistently  
-- [ ] **Skip duplicates when importing** – avoid repeated quotes  
-- [ ] **Highlight / quote sequencing** – Shuffle or Sequential display
-
+* [ ] **Manage scannable directories** – view, remove, edit
+* [ ] **Pause / pin a highlight** – display favorite quotes persistently
+* [ ] **Skip duplicates when importing** – avoid repeated quotes
+* [ ] **Highlight / quote sequencing** – Shuffle or Sequential display
+* [ ] **Screensaver message menu** – dynamic control of message content, layout, and placement
 
 ---
 
@@ -130,9 +143,9 @@ Happiness comes from your own actions.
 * **Linux Mint** – KOReader nightly build
 * **Kindle Paperwhite 5** – KOReader 2025.10
 
-Other devices may work; testing encouraged. Report issues or contribute if possible.
+Other devices may work.
+Testing, bug reports, and contributions are welcome.
 
 ---
 
 ⭐ If you enjoy Highlights Screensaver, please consider leaving a star.
-
