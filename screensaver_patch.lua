@@ -42,7 +42,7 @@ local function patchScreensaverShow()
             local clipping = clipper.getRandomClipping()
             config.setLastShownHighlight(clipping:filename())
 
-            self.screensaver_widget = highlightsWidget.buildHighlightsScreensaverWidget(clipping)
+            self.screensaver_widget = highlightsWidget.buildHighlightsScreensaverWidget(self.ui,clipping)
             self.screensaver_widget.modal = true
             self.screensaver_widget.dithered = true
             UIManager:show(self.screensaver_widget, "full")
