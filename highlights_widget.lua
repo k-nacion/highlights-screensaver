@@ -58,9 +58,54 @@ local function getNoteConfig()
 end
 
 ----------------------------------------------------------------
--- Screensaver message helper
+-- Screensaver message helpers
 ----------------------------------------------------------------
-local function buildScreensaverMessageWidget(ui, base_font_size)
+
+local function buildBoxMessage(textw, content_width)
+    local frame_opts = {
+        background = Blitbuffer.COLOR_WHITE,
+        bordersize = Size.border.default,
+        padding = Size.padding.large or 18,
+        margin = Size.margin.default,
+        textw,
+    }
+
+    if content_width then
+        frame_opts.dimen = { w = content_width }
+    end
+
+    return FrameContainer:new(frame_opts)
+end
+
+local function buildBannerMessage(textw, content_width, fgcolor)
+    local padding = Size.padding.large or 18
+
+    local banner_content = VerticalGroup:new {
+        -- Top border only
+        LineWidget:new {
+            dimen = Geom:new {
+                w = content_width,
+                h = Size.border.default,
+            },
+            background = fgcolor,
+        },
+        VerticalSpan:new { width = padding },
+        textw,
+        VerticalSpan:new { width = padding },
+    }
+
+    return FrameContainer:new {
+        background = Blitbuffer.COLOR_WHITE,
+        padding = 0,
+        margin = Size.margin.default,
+        dimen = content_width and { w = content_width } or nil,
+        banner_content,
+        bordersize = 0, -- remove all frame borders
+
+    }
+end
+
+local function buildScreensaverMessageWidget(ui, base_font_size, match_content_width, content_width, fgcolor)
     if not G_reader_settings:isTrue("screensaver_show_message") then
         return nil
     end
@@ -70,12 +115,13 @@ local function buildScreensaverMessageWidget(ui, base_font_size)
         return nil
     end
 
-    -- Expand placeholders (book title, author, etc.)
     if ui and ui.bookinfo then
         message = ui.bookinfo:expandString(message) or message
     end
 
-    -- Smaller than notes / highlights
+    local container_type =
+        G_reader_settings:readSetting("screensaver_message_container") or "box"
+
     local font_size = math.max(math.floor(base_font_size * 0.25), 10)
 
     local textw = TextBoxWidget:new {
@@ -85,14 +131,17 @@ local function buildScreensaverMessageWidget(ui, base_font_size)
         line_height = 1.1,
     }
 
-    return FrameContainer:new {
-        background = Blitbuffer.COLOR_WHITE,
-        bordersize = Size.border.default,
-        padding = Size.padding.large or 18,
-        margin = Size.margin.default,
-        textw,
-    }
+    local width = match_content_width and content_width or nil
+
+    if container_type == "banner" then
+        return buildBannerMessage(textw, width, fgcolor)
+    end
+
+    -- default / "box"
+    return buildBoxMessage(textw, width)
 end
+
+
 
 ----------------------------------------------------------------
 -- Main builder
@@ -224,8 +273,15 @@ function M.buildHighlightsScreensaverWidget(ui, clipping)
     ------------------------------------------------------------
     -- Final composition
     ------------------------------------------------------------
-    local message_widget =
-        buildScreensaverMessageWidget(ui, font_size_base)
+    local content_width = content:getSize().w
+    local message_widget = buildScreensaverMessageWidget(
+        ui,
+        font_size_base,
+        true,
+        content_width,
+        col_fg
+    )
+
 
     local final_content
     if message_widget then
