@@ -1,7 +1,7 @@
 local UIManager = require("ui/uimanager")
 local InfoMessage = require("ui/widget/infomessage")
-local config = require("config")
-local clipper = require("clipper")
+local config = require("core.config")
+local clipper = require("core.clipper")
 local _ = require("gettext")
 
 local function buildMenuDisableHighlight()

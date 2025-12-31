@@ -1,5 +1,5 @@
 local json = require("json")
-local utils = require("utils")
+local utils = require("core.utils")
 
 local M = {}
 

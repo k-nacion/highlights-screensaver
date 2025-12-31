@@ -1,5 +1,5 @@
 local _ = require("gettext")
-local Spin = require("../widgets/generic_spin")
+local Spin = require("widgets.generic_spin")
 
 -------------------------------------------------------------------------
 -- SCREENSAVER UI CONFIGURATION

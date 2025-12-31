@@ -1,7 +1,7 @@
 -- external_quotes.lua
 local lfs = require("libs/libkoreader-lfs")
-local Logger = require("logger")
-local clipper = require("clipper")
+local Logger = require("core.logger")
+local clipper = require("core.clipper")
 local UIManager = require("ui/uimanager")
 local InfoMessage = require("ui/widget/infomessage")
 

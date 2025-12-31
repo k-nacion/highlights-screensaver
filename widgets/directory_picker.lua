@@ -4,7 +4,7 @@ local PathChooser = require("ui/widget/pathchooser")
 local InfoMessage = require("ui/widget/infomessage")
 local DataStorage = require("datastorage")
 local LuaSettings = require("luasettings")
-local Logger = require("logger")
+local Logger = require("core.logger")
 local lfs = require("libs/libkoreader-lfs")
 local ffiUtil = require("ffi/util")
 

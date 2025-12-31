@@ -2,7 +2,7 @@
 local lfs = require("libs/libkoreader-lfs")
 local UIManager = require("ui/uimanager")
 local InfoMessage = require("ui/widget/infomessage")
-local Logger = require("logger")
+local Logger = require("core.logger")
 
 local DirectoryScanner = {}
 

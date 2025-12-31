@@ -1,9 +1,9 @@
 local _ = require("gettext")
 local UIManager = require("ui/uimanager")
 local InfoMessage = require("ui/widget/infomessage")
-local scan = require("scan")
-local clipper = require("../clipper")
-local config = require("../config")
+local scan = require("core.scan")
+local clipper = require("core.clipper")
+local config = require("core.config")
 
 local function buildMenuScanHighlights()
     return {

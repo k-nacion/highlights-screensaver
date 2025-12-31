@@ -1,6 +1,6 @@
 local WidgetContainer = require("ui/widget/container/widgetcontainer")
 local menu_injector = require("menu_builders._menu_injector")
-local screensaver_patch = require("screensaver_patch")
+local screensaver_patch = require("core.screensaver_patch")
 
 -- Patch Screensaver.show
 screensaver_patch.patchScreensaverShow()

@@ -1,5 +1,5 @@
 local _ = require("gettext")
-local config = require("config")
+local config = require("core.config")
 local ffiUtil = require("ffi/util")
 local T = ffiUtil.template
 

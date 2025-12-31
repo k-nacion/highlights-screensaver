@@ -4,7 +4,6 @@ local Font = require("ui/font")
 local Geom = require("ui/geometry")
 local TextBoxWidget = require("ui/widget/textboxwidget")
 local Device = require("device")
-local config = require("config")
 local Screen = Device.screen
 local ScreenSaverWidget = require("ui/widget/screensaverwidget")
 local Size = require("ui/size")
@@ -17,6 +16,7 @@ local FrameContainer = require("ui/widget/container/framecontainer")
 local OverlapGroup = require("ui/widget/overlapgroup")
 local BottomContainer = require("ui/widget/container/bottomcontainer")
 
+local config = require("core.config")
 
 
 local M = {}

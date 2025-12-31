@@ -1,7 +1,7 @@
-
-local config = require("../config")
-local DirectoryPicker = require("widgets/directory_picker")
 local _ = require("gettext")
+
+local config = require("core.config")
+local DirectoryPicker = require("widgets.directory_picker")
 
 local function buildMenuImportExternalQuotes()
     return {
