@@ -4,7 +4,7 @@ local scanMenus = require("menu_builders.scan")
 local fontsMenus = require("menu_builders.fonts_menu")
 local themeMenus = require("menu_builders.theme")
 local highlightsMenus = require("menu_builders.highlights_layout")
-local notesMenus = require("menu_builders.notes_menu")
+local notesMenus = require("menu_builders.highlight_notes_menu")
 local importMenus = require("menu_builders.import_quotes_menu")
 local orientationMenus = require("menu_builders.orientation_menu")
 local disableHighlightMenus = require("menu_builders.disable_highlight_menu")
@@ -48,7 +48,7 @@ local function buildMenuLayout()
         sub_item_table = {
             highlightsMenus.buildMenuHighlightsLayoutOptions(),
             notesLayoutMenus.buildMenuNotesLayoutOptions(),
-            notesMenus.buildMenuShowNotesOption(),
+            notesMenus.buildMenuShowHighlightNotes(),
         },
     }
 end
