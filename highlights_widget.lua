@@ -81,16 +81,27 @@ local function buildBoxMessage(textw, content_width)
     return FrameContainer:new(frame_opts)
 end
 
-local function buildBannerMessage(textw, content_width, fgcolor)
-    local padding = Size.padding.large or 18
+local function buildBannerMessage(textw, highlight_width, fgcolor)
+    local width_mode = G_reader_settings:readSetting("screensaver_message_width_mode") or "highlight"
+    local banner_width
 
+    if width_mode == "viewport" then
+        banner_width = Screen:getWidth()
+    elseif width_mode == "message_content" then
+        local msg_size = textw:getSize()
+        banner_width = msg_size.w
+    elseif width_mode == "highlight" then
+        banner_width = highlight_width or Screen:getWidth() * 0.9
+    elseif width_mode == "custom" then
+        banner_width = G_reader_settings:readSetting("screensaver_message_custom_width") or 200
+    end
+
+    local top_border_width = G_reader_settings:readSetting("screensaver_message_top_border_width") or banner_width
+
+    local padding = Size.padding.large or 18
     local banner_content = VerticalGroup:new {
-        -- Top border only
         LineWidget:new {
-            dimen = Geom:new {
-                w = content_width,
-                h = Size.border.default,
-            },
+            dimen = Geom:new { w = top_border_width, h = Size.border.default },
             background = fgcolor,
         },
         VerticalSpan:new { width = padding },
@@ -102,12 +113,12 @@ local function buildBannerMessage(textw, content_width, fgcolor)
         background = Blitbuffer.COLOR_WHITE,
         padding = 0,
         margin = Size.margin.default,
-        dimen = content_width and { w = content_width } or nil,
+        dimen = { w = banner_width },
         banner_content,
-        bordersize = 0, -- remove all frame borders
-
+        bordersize = 0,
     }
 end
+
 
 local function buildScreensaverMessageWidget(ui, base_font_size, match_content_width, content_width, fgcolor)
     if not G_reader_settings:isTrue("screensaver_show_message") then

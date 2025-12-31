@@ -38,6 +38,7 @@ local function buildMenuNotesLayoutOptions()
                 enabled_func = function() return not isSyncEnabled() end,
             },
             {
+                separator = true,
                 text = _("Text Alignment: Right"),
                 radio = true,
                 checked_func = function()
@@ -161,7 +162,7 @@ local function buildMenuNotesLayoutOptions()
     end
 
     return {
-        text = _("Notes Layout Options"),
+        text = _("Notes Layout"),
         sub_item_table = {
             -- 1️⃣ Sync Highlights Layout checkbox
             {
@@ -194,6 +195,7 @@ local function buildMenuNotesLayoutOptions()
                 enabled_func = function()
                     return not isSyncEnabled()
                 end,
+                separator = true,
             },
 
             -- 3️⃣ All editable notes options

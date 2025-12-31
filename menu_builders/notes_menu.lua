@@ -4,6 +4,16 @@ local InfoMessage = require("ui/widget/infomessage")
 local ffiUtil = require("ffi/util")
 local T = ffiUtil.template
 
+-- Ensure default value exists
+if not G_reader_settings:readSetting("show_notes_option") then
+	G_reader_settings:saveSetting("show_notes_option", "full")
+end
+
+if not G_reader_settings:readSetting("show_notes_limit") then
+	G_reader_settings:saveSetting("show_notes_limit", 70)
+end
+
+
 -------------------------------------------------------------------------
 -- SHOW NOTES OPTION MENU
 -------------------------------------------------------------------------
