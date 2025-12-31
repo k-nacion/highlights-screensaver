@@ -14,6 +14,10 @@ local HorizontalGroup = require("ui/widget/horizontalgroup")
 local HorizontalSpan = require("ui/widget/horizontalspan")
 local LineWidget = require("ui/widget/linewidget")
 local FrameContainer = require("ui/widget/container/framecontainer")
+local OverlapGroup = require("ui/widget/overlapgroup")
+local BottomContainer = require("ui/widget/container/bottomcontainer")
+
+
 
 local M = {}
 
@@ -127,8 +131,8 @@ local function buildScreensaverMessageWidget(ui, base_font_size, match_content_w
     local textw = TextBoxWidget:new {
         text = message,
         face = Font:getFace("infofont", font_size),
-        alignment = "center",
-        line_height = 1.1,
+        alignment = "left",
+        line_height = 0,
     }
 
     local width = match_content_width and content_width or nil
@@ -271,9 +275,10 @@ function M.buildHighlightsScreensaverWidget(ui, clipping)
     end
 
     ------------------------------------------------------------
-    -- Final composition
+    -- Screensaver message
     ------------------------------------------------------------
     local content_width = content:getSize().w
+    local container_type = G_reader_settings:readSetting("screensaver_message_container") or "box"
     local message_widget = buildScreensaverMessageWidget(
         ui,
         font_size_base,
@@ -282,16 +287,36 @@ function M.buildHighlightsScreensaverWidget(ui, clipping)
         col_fg
     )
 
-
+    ------------------------------------------------------------
+    -- Final composition
+    ------------------------------------------------------------
     local final_content
-    if message_widget then
-        final_content = VerticalGroup:new {
-            content,
-            VerticalSpan:new { width = 32 },
+    if message_widget and container_type == "banner" then
+        -- Banner pinned to bottom
+        local message_container = BottomContainer:new {
+            dimen = Screen:getSize(), -- full viewport
             message_widget,
         }
+        -- Wrap content in CenterContainer to preserve centering
+        local content_container = CenterContainer:new {
+            dimen = Screen:getSize(),
+            content,
+            padding = 24,                           -- adjust as needed
+            margin = 0,
+            bgcolor = Blitbuffer.COLOR_TRANSPARENT, -- keep background behind
+        }
+
+
+        final_content = OverlapGroup:new {
+            content_container,
+            message_container,
+        }
     else
-        final_content = content
+        -- Box or no message
+        final_content = VerticalGroup:new {
+            content,
+            message_widget or nil,
+        }
     end
 
     return ScreenSaverWidget:new {
