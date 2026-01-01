@@ -171,6 +171,19 @@ end
 -- Main Sleep Screen Message menu
 ------------------------------------------------------------
 local function buildMenuSleepScreenMessageOptions()
+
+    local WIDTH_KEY = K.NAMESPACE .. "_message_width_mode"
+
+    local function getWidthMode()
+        local mode = G_reader_settings:readSetting(WIDTH_KEY)
+        if type(mode) ~= "string" then
+            mode = "message_content"      -- desired default
+            G_reader_settings:saveSetting(WIDTH_KEY, mode)
+        end
+        return mode
+    end
+
+
     return {
         separator = true,
         text = _("Sleep Screen Message"),
@@ -185,7 +198,20 @@ local function buildMenuSleepScreenMessageOptions()
             },
 
             {
-                text = _("Container Mode"),
+                text_func = function()
+                    local mode = config.read("screensaver_message_container") or "banner"
+                    local label
+
+                    if mode == "banner" then
+                        label = _("Banner")
+                    elseif mode == "box" then
+                        label = _("Box")
+                    else
+                        label = _("Banner")
+                    end
+
+                    return _("Container: ") .. label
+                end,
                 sub_item_table = {
                     {
                         text = _("Banner"),
@@ -211,64 +237,92 @@ local function buildMenuSleepScreenMessageOptions()
             },
 
             {
-                text = _("Width Mode"),
+                text_func = function()
+                    local mode = getWidthMode()
+                    local label
+
+                    if mode == "viewport" then
+                        label = _("Viewport")
+                    elseif mode == "message_content" then
+                        label = _("Message Content")
+                    elseif mode == "highlight" then
+                        label = _("Highlight Width")
+                    elseif mode == "custom" then
+                        local v = G_reader_settings:readSetting(K.NAMESPACE .. "_message_custom_width")
+                        if type(v) == "number" then
+                            label = _("Custom") .. " (" .. v .. ")"
+                        else
+                            label = _("Custom")
+                        end
+                    end
+
+                    return _("Width: ") .. (label)
+                end,
                 sub_item_table = {
                     {
                         text = _("Viewport"),
                         radio = true,
                         checked_func = function()
-                            return G_reader_settings:readSetting("screensaver_message_width_mode") == "viewport"
+                            return getWidthMode() == "viewport"
                         end,
                         callback = function()
-                            G_reader_settings:saveSetting("screensaver_message_width_mode", "viewport")
+                            G_reader_settings:saveSetting(K.NAMESPACE .. "_message_width_mode", "viewport")
                         end,
                     },
                     {
                         text = _("Message Content"),
                         radio = true,
                         checked_func = function()
-                            return G_reader_settings:readSetting("screensaver_message_width_mode") == "message_content"
+                            return getWidthMode() == "message_content"
                         end,
                         callback = function()
-                            G_reader_settings:saveSetting("screensaver_message_width_mode", "message_content")
+                            G_reader_settings:saveSetting(K.NAMESPACE .. "_message_width_mode", "message_content")
                         end,
                     },
                     {
                         text = _("Highlight Width"),
                         radio = true,
                         checked_func = function()
-                            return G_reader_settings:readSetting("screensaver_message_width_mode") == "highlight"
+                            return getWidthMode() == "highlight"
                         end,
                         callback = function()
-                            G_reader_settings:saveSetting("screensaver_message_width_mode", "highlight")
+                            G_reader_settings:saveSetting(K.NAMESPACE .. "_message_width_mode", "highlight")
                         end,
                     },
                     {
                         text_func = function()
-                            local value = G_reader_settings:readSetting("screensaver_message_custom_width") or 200
+                            local value = G_reader_settings:readSetting(K.NAMESPACE .. "_message_custom_width") or 50
                             return _("Custom Width: ") .. value
                         end,
                         radio = true,
                         checked_func = function()
-                            return G_reader_settings:readSetting("screensaver_message_width_mode") == "custom"
+                            return getWidthMode() == "custom"
                         end,
                         callback = function(touchmenu)
-                            G_reader_settings:saveSetting("screensaver_message_width_mode", "custom")
+                            G_reader_settings:saveSetting(K.NAMESPACE .. "_message_width_mode", "custom")
+
+                            local key = K.NAMESPACE .. "_message_custom_width"
+                            local value = G_reader_settings:readSetting(key)
+
+                            -- Ensure a persisted default exists
+                            if type(value) ~= "number" then
+                                value = 50
+                                G_reader_settings:saveSetting(key, value)
+                            end
+
                             Spin {
-                                value = G_reader_settings:readSetting("screensaver_message_custom_width") or 200,
-                                min = 50,
-                                max = math.huge, -- UI freedom only
+                                value = value,
+                                min = 1,
+                                max = math.huge, -- UI freedom
                                 step = 10,
+                                default = 50,
                                 onApply = function(v)
-                                    if v == math.huge or v ~= v then
-                                        -- safety fallback
-                                        v = 200
-                                    end
-                                    G_reader_settings:saveSetting("screensaver_message_custom_width", v)
+                                    G_reader_settings:saveSetting(key, v)
                                     touchmenu:updateItems()
                                 end,
                             }
                         end,
+
                     },
                 },
             },
