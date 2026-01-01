@@ -17,17 +17,18 @@ local function buildMenuPaddingMargin()
             -- Padding (All)
             {
                 text_func = function()
-                    local v = config.read(K.screensaver_message.layout.padding) or 16
+                    local v = config.read(K.screensaver_message.layout.padding) or 2
                     return _("Padding: ") .. v
                 end,
                 keep_menu_open = true,
                 callback = function(touchmenu)
                     Spin {
-                        value = config.read(K.screensaver_message.layout.padding) or 16,
+                        title = _("Padding"),
+                        value = config.read(K.screensaver_message.layout.padding) or 2,
                         min = 0,
                         max = 64,
                         step = 2,
-                        default = 16,
+                        default = 2,
                         onApply = function(v)
                             config.write(K.screensaver_message.layout.padding, v)
                             touchmenu:updateItems()
@@ -45,11 +46,12 @@ local function buildMenuPaddingMargin()
                 keep_menu_open = true,
                 callback = function(touchmenu)
                     Spin {
-                        value = config.read(K.screensaver_message.layout.margin) or 24,
+                        title = _("Margin"),
+                        value = config.read(K.screensaver_message.layout.margin) or 4,
                         min = 0,
                         max = 64,
                         step = 2,
-                        default = 24,
+                        default = 4,
                         onApply = function(v)
                             config.write(K.screensaver_message.layout.margin, v)
                             touchmenu:updateItems()
@@ -65,8 +67,20 @@ end
 -- Alignment
 ------------------------------------------------------------
 local function buildMenuAlignment()
+    local function getAlignment()
+        local align = config.read(K.screensaver_message.layout.alignment)
+        if type(align) ~= "string" then
+            align = "center" -- default
+            config.write(K.screensaver_message.layout.alignment, align)
+        end
+        return align
+    end
+
     return {
-        text = _("Alignment"),
+        text_func = function()
+            local align = getAlignment()
+            return _("Alignment: ") .. align:sub(1,1):upper() .. align:sub(2)
+        end,
         sub_item_table = {
             {
                 text = _("Left"),
@@ -108,24 +122,27 @@ end
 local function buildMenuLineSpacing()
     return {
         text_func = function()
-            local value = config.read(K.screensaver_message.layout.line_spacing) or 1.2
-            return _("Line Spacing: ") .. string.format("%.2f", value)
+            local raw = config.read(K.screensaver_message.layout.line_spacing) or 0.4
+            return _("Line Spacing: ") .. string.format("%.2f", raw)
         end,
         keep_menu_open = true,
         callback = function(touchmenu)
+            local value = math.floor((config.read(K.screensaver_message.layout.line_spacing) or 0.4) * 100)
             Spin {
-                value = config.read(K.screensaver_message.layout.line_spacing) or 1.2,
-                min = 0.6,
-                max = 2.0,
-                step = 0.05,
+                title = _("Line Spacing"),
+                value = value,
+                min = 0,      -- 0.0
+                max = 160,    -- 1.6
+                step = 5,     -- 0.05
                 onApply = function(v)
-                    config.write(K.screensaver_message.layout.line_spacing, v)
+                    config.write(K.screensaver_message.layout.line_spacing, v / 100)
                     touchmenu:updateItems()
                 end,
             }
         end,
     }
 end
+
 
 ------------------------------------------------------------
 -- Font size
@@ -139,10 +156,12 @@ local function buildMenuFontSize()
         keep_menu_open = true,
         callback = function(touchmenu)
             Spin {
+                title = _("Font Size"),
                 value = config.read(K.screensaver_message.layout.font_size) or 48,
-                min = 12,
+                min = 4,
                 max = 72,
                 step = 2,
+                default = 14,
                 onApply = function(v)
                     config.write(K.screensaver_message.layout.font_size, v)
                     touchmenu:updateItems()

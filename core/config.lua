@@ -5,12 +5,12 @@ local K = require("core.keys")
 local M = {}
 
 M.defaults = {
-    [K.screensaver_message.layout.font_size] = 12,
-    [K.screensaver_message.layout.line_spacing] = 1.2,
+    [K.screensaver_message.layout.font_size] = 14,
+    [K.screensaver_message.layout.line_spacing] = 0.4,
     [K.screensaver_message.layout.alignment] = "center",
 
-    [K.screensaver_message.layout.padding] = 16,
-    [K.screensaver_message.layout.margin] = 24,
+    [K.screensaver_message.layout.padding] = 2,
+    [K.screensaver_message.layout.margin] = 4,
 }
 
 function M.read(key)

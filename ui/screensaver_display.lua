@@ -59,20 +59,41 @@ local function getThemeColors()
     end
 end
 
+local function styleTextWidget(textw)
+    local font_size = config.read(K.screensaver_message.layout.font_size)
+    local line_height = config.read(K.screensaver_message.layout.line_spacing)
+    local alignment = config.read(K.screensaver_message.layout.alignment) or "center"
+
+    -- Update layout-related properties (safe)
+    textw.line_height = line_height
+    textw.alignment = alignment
+
+    -- IMPORTANT: recreate the font face instead of resizing it
+    if textw.face and textw.face.family then
+        textw.face = Font:getFace(textw.face.family, font_size)
+    end
+
+    return textw
+end
+
+
 ----------------------------------------------------------------
 -- Screensaver message containers (PLUGIN SETTINGS ONLY)
 ----------------------------------------------------------------
 local function buildBoxMessage(textw)
+    local textbw = styleTextWidget(textw)
     return FrameContainer:new {
         background = Blitbuffer.COLOR_WHITE,
         bordersize = Size.border.default,
         padding = readNumber(K.screensaver_message.layout.padding, Size.padding.large),
         margin = readNumber(K.screensaver_message.layout.margin, Size.margin.default),
-        textw,
+        textbw,
     }
 end
 
 local function buildBannerMessage(textw, highlight_width, fgcolor)
+    local textbw = styleTextWidget(textw)
+
     local width_mode = G_reader_settings:readSetting(K.NAMESPACE .. "_message_width_mode")
 
     local banner_width
@@ -82,7 +103,7 @@ local function buildBannerMessage(textw, highlight_width, fgcolor)
         banner_width = Screen:getWidth()
 
     elseif width_mode == "message_content" then
-        banner_width = textw:getSize().w
+        banner_width = textbw:getSize().w
 
     elseif width_mode == "custom" then
         if type(custom_width) ~= "number"
@@ -106,7 +127,7 @@ local function buildBannerMessage(textw, highlight_width, fgcolor)
             background = fgcolor,
         },
         VerticalSpan:new { width = padding },
-        textw,
+        textbw,
         VerticalSpan:new { width = padding },
     }
 
@@ -137,8 +158,8 @@ local function buildScreensaverMessageWidget(ui, base_font_size, content_width, 
         message = ui.bookinfo:expandString(message) or message
     end
 
-    local font_size = math.max(math.floor(base_font_size * 0.25), 10)
-    local line_height = clamp(readNumber(K.screensaver_message.layout.line_spacing, 1.1), 0.8, 1.6)
+    local font_size = config.read(K.screensaver_message.layout.font_size)
+    local line_height = config.read(K.screensaver_message.layout.line_spacing)
 
     local textw = TextBoxWidget:new {
         text = message,
