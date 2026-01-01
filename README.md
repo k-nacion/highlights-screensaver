@@ -19,9 +19,9 @@ All changes are released under **GNU GPL v3.0**, and users are welcome to use th
 
 ## Example images
 
-| Light Theme 1                                                            | Light Theme 2                                                            | Dark Theme 1                                                         |
-| ------------------------------------------------------------------------ | ------------------------------------------------------------------------ | -------------------------------------------------------------------- |
-| <img src="images/light_01.JPG" alt="Light theme example 1" width="250"/> | <img src="images/light_02.JPG" alt="Light theme example 2" width="250"/> | <img src="images/dark_01.JPG" alt="Dark theme example" width="250"/> |
+| Light Theme Landscape                                                               | Light Theme Portrait                                                               | Dark Theme Portrait                                                            |
+|-------------------------------------------------------------------------------------|------------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
+| <img src="assets/img/light_landscape.jpg" alt="Light theme example 1" width="250"/> | <img src="assets/img/light_portrait.jpg" alt="Light theme example 2" width="250"/> | <img src="assets/img/dark_portrait.jpg" alt="Dark theme example" width="250"/> |
 
 ---
 
@@ -131,7 +131,7 @@ Happiness comes from your own actions.
 * [ ] **Pause / pin a highlight** – display favorite quotes persistently
 * [ ] **Skip duplicates when importing** – avoid repeated quotes
 * [ ] **Highlight / quote sequencing** – Shuffle or Sequential display
-* [ ] **Screensaver message menu** – dynamic control of message content, layout, and placement
+* [x] **Screensaver message menu** – dynamic control of message content, layout, and placement
 
 ---
 
