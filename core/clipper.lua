@@ -1,6 +1,6 @@
 local json = require("json")
 local lfs = require("libs/libkoreader-lfs")
-local utils = require("utils")
+local utils = require("core.utils")
 
 local M = {}
 

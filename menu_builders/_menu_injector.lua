@@ -1,18 +1,8 @@
 -- lua
 local _ = require("gettext")
-local UIManager = require("ui/uimanager")
-local InfoMessage = require("ui/widget/infomessage")
 
--- Individual menu modules
-local scanMenus = require("menu_builders.scan")
-local fontsMenus = require("menu_builders.fonts_menu")
-local themeMenus = require("menu_builders.theme")
-local highlightsMenus = require("menu_builders.highlights_layout")
-local notesMenus = require("menu_builders.notes_menu")
-local importMenus = require("menu_builders.import_quotes_menu")
-local orientationMenus = require("menu_builders.orientation_menu")
-local disableHighlightMenus = require("menu_builders.disable_highlight_menu")
-local notesLayoutMenus = require("menu_builders.notes_layout")
+local highlightsMenu = require("menu_builders.highlights_screensaver_menu")
+
 
 -- Constants
 local HIGHLIGHTS_MODE = "highlights"
@@ -31,21 +21,8 @@ local function patchDofileMenus()
                 local wallpaper_submenu = result[1].sub_item_table
 
                 -- Add highlights screensaver menu
-                table.insert(result, 3, {
-                    text = _("Highlights screensaver"),
-                    sub_item_table = {
-                        scanMenus.buildMenuScanHighlights(),
-                        scanMenus.buildMenuAddScannableDirectory(),
-                        disableHighlightMenus.buildMenuDisableHighlight(),
-                        themeMenus.buildMenuTheme(),
-                        fontsMenus.buildMenuFonts(),
-                        highlightsMenus.buildMenuHighlightsLayoutOptions(),
-                        notesLayoutMenus.buildMenuNotesLayoutOptions(),
-                        orientationMenus.buildMenuToggleOrientation(),
-                        notesMenus.buildMenuShowNotesOption(),
-                        importMenus.buildMenuImportExternalQuotes(),
-                    },
-                })
+                table.insert(result, 3, highlightsMenu.buildHighlightsScreensaverMenu())
+
 
                 -- Add option to select highlights screensaver
                 table.insert(wallpaper_submenu, 6, {

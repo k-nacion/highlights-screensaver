@@ -1,6 +1,7 @@
 local _ = require("gettext")
-local config = require("config")
 local FontList = require("fontlist")
+
+local config = require("core.config")
 local util = require("util")
 
 local function buildMenuFonts()

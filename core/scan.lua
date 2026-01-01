@@ -4,9 +4,9 @@ local InfoMessage = require("ui/widget/infomessage")
 local UIManager = require("ui/uimanager")
 local lfs = require("libs/libkoreader-lfs")
 
-local clipper = require("clipper")
-local config = require("config")
-local utils = require("utils")
+local clipper = require("core.clipper")
+local config = require("core.config")
+local utils = require("core.utils")
 
 local M = {}
 

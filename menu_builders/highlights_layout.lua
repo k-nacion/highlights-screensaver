@@ -1,12 +1,12 @@
 local _ = require("gettext")
-local Spin = require("../widgets/generic_spin")
+local Spin = require("widgets.generic_spin")
 
 -------------------------------------------------------------------------
 -- SCREENSAVER UI CONFIGURATION
 -------------------------------------------------------------------------
 local function buildMenuHighlightsLayoutOptions()
     return {
-        text = _("Highlights Layout Options"),
+        text = _("Highlights Layout"),
         sub_item_table = {
             -- Text alignment
             {
@@ -38,6 +38,7 @@ local function buildMenuHighlightsLayoutOptions()
                 callback = function()
                     G_reader_settings:saveSetting("hs_text_alignment", "right")
                 end,
+                separator = true,
             },
 
             -- Justification toggle
