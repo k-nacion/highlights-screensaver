@@ -25,7 +25,7 @@ local M = {}
 -- Defensive helpers
 ----------------------------------------------------------------
 local function readNumber(key, default)
-    local v = config.read(key)
+    local v = config.read(key, default)
     if type(v) ~= "number" then
         return default
     end
@@ -47,7 +47,7 @@ end
 ----------------------------------------------------------------
 local function getThemeColors()
     local theme = config.getTheme()
-    local is_night_mode = G_reader_settings:isTrue("night_mode")
+    local is_night_mode = G_reader_settings:isTrue(K.koreader.is_night_mode) -- hybrid read example
 
     if theme == config.Theme.SYSTEM then
         return Blitbuffer.COLOR_BLACK, Blitbuffer.COLOR_WHITE
@@ -64,11 +64,9 @@ local function styleTextWidget(textw)
     local line_height = config.read(K.screensaver_message.layout.line_spacing)
     local alignment = config.read(K.screensaver_message.layout.alignment) or "center"
 
-    -- Update layout-related properties (safe)
     textw.line_height = line_height
     textw.alignment = alignment
 
-    -- IMPORTANT: recreate the font face instead of resizing it
     if textw.face and textw.face.family then
         textw.face = Font:getFace(textw.face.family, font_size)
     end
@@ -76,9 +74,8 @@ local function styleTextWidget(textw)
     return textw
 end
 
-
 ----------------------------------------------------------------
--- Screensaver message containers (PLUGIN SETTINGS ONLY)
+-- Screensaver message containers
 ----------------------------------------------------------------
 local function buildBoxMessage(textw)
     local textbw = styleTextWidget(textw)
@@ -94,26 +91,20 @@ end
 local function buildBannerMessage(textw, highlight_width, fgcolor)
     local textbw = styleTextWidget(textw)
 
-    local width_mode = G_reader_settings:readSetting(K.NAMESPACE .. "_message_width_mode")
+    local width_mode = config.read(K.screensaver_message.width.mode)
+    local custom_width = config.read(K.screensaver_message.width.custom_mode)
 
     local banner_width
-    local custom_width = G_reader_settings:readSetting(K.NAMESPACE .. "_message_custom_width")
-
     if width_mode == "viewport" then
         banner_width = Screen:getWidth()
-
     elseif width_mode == "message_content" then
         banner_width = textbw:getSize().w
-
     elseif width_mode == "custom" then
-        if type(custom_width) ~= "number"
-                or custom_width == math.huge
-                or custom_width ~= custom_width then
+        if type(custom_width) ~= "number" or custom_width == math.huge or custom_width ~= custom_width then
             banner_width = Screen:getWidth()
         else
             banner_width = custom_width
         end
-
     else
         banner_width = highlight_width or Screen:getWidth() * 0.9
     end
@@ -145,11 +136,11 @@ end
 -- Screensaver message builder
 ----------------------------------------------------------------
 local function buildScreensaverMessageWidget(ui, base_font_size, content_width, fgcolor)
-    if not G_reader_settings:isTrue("screensaver_show_message") then
+    if not config.read(K.koreader.screensaver.show_message) then
         return nil
     end
 
-    local message = G_reader_settings:readSetting("screensaver_message")
+    local message = config.read(K.koreader.screensaver.message)
     if not message or message == "" then
         return nil
     end
@@ -158,17 +149,14 @@ local function buildScreensaverMessageWidget(ui, base_font_size, content_width, 
         message = ui.bookinfo:expandString(message) or message
     end
 
-    local font_size = config.read(K.screensaver_message.layout.font_size)
-    local line_height = config.read(K.screensaver_message.layout.line_spacing)
-
     local textw = TextBoxWidget:new {
         text = message,
-        face = Font:getFace("infofont", font_size),
+        face = Font:getFace("infofont", config.read(K.screensaver_message.layout.font_size)),
         alignment = config.read(K.screensaver_message.layout.alignment) or "center",
-        line_height = line_height,
+        line_height = config.read(K.screensaver_message.layout.line_spacing),
     }
 
-    local container_type = G_reader_settings:readSetting("screensaver_message_container") or "box"
+    local container_type = config.read(K.koreader.screensaver.container) or "box"
 
     if container_type == "banner" then
         return buildBannerMessage(textw, content_width, fgcolor)
@@ -178,50 +166,38 @@ local function buildScreensaverMessageWidget(ui, base_font_size, content_width, 
 end
 
 ----------------------------------------------------------------
--- Notes configuration (UNCHANGED, reader settings)
+-- Notes configuration (UNCHANGED)
 ----------------------------------------------------------------
 local function getNoteConfig()
-    if G_reader_settings:isTrue("ns_sync_with_highlights") then
+    if config.read(K.notes.sync_with_highlights) then
         return {
-            text_alignment = G_reader_settings:readSetting("hs_text_alignment") or "left",
-            line_height = (G_reader_settings:readSetting("hs_line_height") or 100) / 100,
-            width_percent = G_reader_settings:readSetting("hs_width_percent") or 90,
-            font_base = G_reader_settings:readSetting("hs_font_size_base") or 48,
-            font_min = G_reader_settings:readSetting("hs_font_size_min") or 12,
+            text_alignment = config.read(K.highlights.alignment) or "left",
+            line_height = (config.read(K.highlights.line_height) or 100) / 100,
+            width_percent = config.read(K.highlights.width_percent) or 90,
+            font_base = config.read(K.highlights.font_size_base) or 48,
+            font_min = config.read(K.highlights.font_size_min) or 12,
         }
     else
         return {
-            text_alignment = G_reader_settings:readSetting("ns_text_alignment") or "left",
-            line_height = (G_reader_settings:readSetting("ns_line_height") or 100) / 100,
-            width_percent = G_reader_settings:readSetting("ns_width_percent") or 90,
-            font_base = G_reader_settings:readSetting("ns_font_size_base") or 48,
-            font_min = G_reader_settings:readSetting("ns_font_size_min") or 12,
+            text_alignment = config.read(K.notes.alignment) or "left",
+            line_height = (config.read(K.notes.line_height) or 100) / 100,
+            width_percent = config.read(K.notes.width_percent) or 90,
+            font_base = config.read(K.notes.font_base) or 48,
+            font_min = config.read(K.notes.font_min) or 12,
         }
     end
 end
 
+
 ----------------------------------------------------------------
--- Main entry (FULLY RESTORED)
+-- Main entry
 ----------------------------------------------------------------
 function M.buildHighlightsScreensaverWidget(ui, clipping)
     local col_fg, col_bg = getThemeColors()
     local fonts = config.getFonts()
 
-    -- Highlight layout (READER SETTINGS)
-    local hs_alignment = G_reader_settings:readSetting("hs_text_alignment") or "left"
-
-    local hs_justified = G_reader_settings:isTrue("hs_justified")
-
-    local hs_line_height = (G_reader_settings:readSetting("hs_line_height") or 100) / 100
-
-    local hs_width = Screen:getWidth() *
-            ((G_reader_settings:readSetting("hs_width_percent") or 90) / 100)
-
-    local hs_font_base = G_reader_settings:readSetting("hs_font_size_base") or 48
-
-    local hs_font_min = G_reader_settings:readSetting("hs_font_size_min") or 12
-
-    local hs_border_spacing = G_reader_settings:readSetting("hs_border_spacing") or 24
+    local hs_cfg = getNoteConfig()
+    local hs_width = Screen:getWidth() * (hs_cfg.width_percent / 100)
 
     local function buildContent(base_font_size)
         local function fontSizeAlt()
@@ -232,9 +208,9 @@ function M.buildHighlightsScreensaverWidget(ui, clipping)
             text = clipping.text,
             face = Font:getFace(fonts.quote, base_font_size),
             width = hs_width,
-            alignment = hs_alignment,
-            justified = hs_justified,
-            line_height = hs_line_height,
+            alignment = hs_cfg.text_alignment,
+            justified = config.read(K.highlights.justified),
+            line_height = hs_cfg.line_height,
             fgcolor = col_fg,
             bgcolor = col_bg,
         }
@@ -247,7 +223,7 @@ function M.buildHighlightsScreensaverWidget(ui, clipping)
                 },
                 background = col_fg,
             },
-            HorizontalSpan:new { width = hs_border_spacing },
+            HorizontalSpan:new { width = config.read(K.highlights.border_spacing) or 24 },
             highlight_text,
         }
 
@@ -268,23 +244,20 @@ function M.buildHighlightsScreensaverWidget(ui, clipping)
             source_text,
         }
 
-        -- Notes (UNCHANGED)
-        local notes_option = G_reader_settings:readSetting("show_notes_option") or "full"
+        -- Notes
+        local notes_option = config.read(K.notes.option.mode) or "full"
 
         if clipping.note and clipping.note ~= "" and notes_option ~= "disable" then
-            local note_cfg = getNoteConfig()
             local note_text_value = clipping.note
-
             if notes_option == "short" then
-                local max_chars = G_reader_settings:readSetting("show_notes_limit") or 70
+                local max_chars = config.read(K.notes.option.limit) or 70
                 if #note_text_value > max_chars then
                     note_text_value = note_text_value:sub(1, max_chars) .. "..."
                 end
             end
 
-            local note_width = Screen:getWidth() * (note_cfg.width_percent / 100)
-
-            local note_font_size = math.ceil(note_cfg.font_base * 0.75)
+            local note_width = Screen:getWidth() * (hs_cfg.width_percent / 100)
+            local note_font_size = math.ceil(hs_cfg.font_base * 0.75)
 
             local note_text = TextBoxWidget:new {
                 text = note_text_value,
@@ -292,8 +265,8 @@ function M.buildHighlightsScreensaverWidget(ui, clipping)
                 width = note_width,
                 fgcolor = col_fg,
                 bgcolor = col_bg,
-                alignment = note_cfg.text_alignment,
-                line_height = note_cfg.line_height,
+                alignment = hs_cfg.text_alignment,
+                line_height = hs_cfg.line_height,
             }
 
             table.insert(content, VerticalSpan:new { width = 32 })
@@ -310,11 +283,9 @@ function M.buildHighlightsScreensaverWidget(ui, clipping)
         return content
     end
 
-    -- Auto-resize loop (UNCHANGED)
-    local font_size = hs_font_base
+    local font_size = hs_cfg.font_base
     local content = buildContent(font_size)
-    while content:getSize().h > Screen:getHeight() * 0.95
-            and font_size > hs_font_min do
+    while content:getSize().h > Screen:getHeight() * 0.95 and font_size > hs_cfg.font_min do
         font_size = font_size - 2
         content = buildContent(font_size)
     end
@@ -322,8 +293,7 @@ function M.buildHighlightsScreensaverWidget(ui, clipping)
     local message_widget = buildScreensaverMessageWidget(ui, font_size, content:getSize().w, col_fg)
 
     local final_content
-    if message_widget
-            and G_reader_settings:readSetting("screensaver_message_container") == "banner" then
+    if message_widget and config.read(K.koreader.screensaver.container) == "banner" then
         final_content = OverlapGroup:new {
             CenterContainer:new {
                 dimen = Screen:getSize(),

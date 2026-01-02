@@ -1,6 +1,9 @@
 -- lua
 local _ = require("gettext")
 
+local config = require("core.config")
+local K = require("core.keys")
+
 local highlightsMenu = require("menu_builders.highlights_screensaver_menu")
 
 
@@ -29,10 +32,10 @@ local function patchDofileMenus()
                     text = _("Show highlights screensaver"),
                     radio = true,
                     checked_func = function()
-                        return G_reader_settings:readSetting("screensaver_type") == HIGHLIGHTS_MODE
+                        return config.read(K.screensaver_type) == HIGHLIGHTS_MODE
                     end,
                     callback = function()
-                        G_reader_settings:saveSetting("screensaver_type", HIGHLIGHTS_MODE)
+                        config.write(K.screensaver_type, HIGHLIGHTS_MODE)
                     end,
                 })
             end

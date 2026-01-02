@@ -1,11 +1,13 @@
 local Screensaver = require("ui/screensaver")
 local highlightsWidget = require("ui.screensaver_display")
-local config = require("core.config")
-local clipper = require("core.clipper")
-local scan = require("core.scan")
 local UIManager = require("ui/uimanager")
 local Device = require("device")
 local Screen = Device.screen
+
+local config = require("core.config")
+local clipper = require("core.clipper")
+local scan = require("core.scan")
+local keys = require("core.keys")
 
 local HIGHLIGHTS_MODE = "highlights"
 local ORIENT_DEFAULT = "default"
@@ -25,7 +27,7 @@ local function patchScreensaverShow()
 
             Device.screen_saver_mode = true
 
-            local mode = G_reader_settings:readSetting("highlights_orientation") or ORIENT_DEFAULT
+            local mode = config.read(keys.display.orientation) or ORIENT_DEFAULT
             if mode == ORIENT_PORTRAIT then
                 Screen:setRotationMode(ROT_UPRIGHT)
             elseif mode == ORIENT_LANDSCAPE then

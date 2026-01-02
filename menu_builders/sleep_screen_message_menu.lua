@@ -191,13 +191,13 @@ end
 ------------------------------------------------------------
 local function buildMenuSleepScreenMessageOptions()
 
-    local WIDTH_KEY = K.NAMESPACE .. "_message_width_mode"
+    local WIDTH_KEY = K.screensaver_message.width.mode
 
     local function getWidthMode()
-        local mode = G_reader_settings:readSetting(WIDTH_KEY)
+        local mode = config.read(WIDTH_KEY)
         if type(mode) ~= "string" then
             mode = "message_content"      -- desired default
-            G_reader_settings:saveSetting(WIDTH_KEY, mode)
+            config.write(WIDTH_KEY, mode)
         end
         return mode
     end
@@ -218,7 +218,7 @@ local function buildMenuSleepScreenMessageOptions()
 
             {
                 text_func = function()
-                    local mode = config.read("screensaver_message_container") or "banner"
+                    local mode = config.read(K.koreader.screensaver.container) or "banner"
                     local label
 
                     if mode == "banner" then
@@ -236,20 +236,20 @@ local function buildMenuSleepScreenMessageOptions()
                         text = _("Banner"),
                         radio = true,
                         checked_func = function()
-                            return (config.read("screensaver_message_container") or "banner") == "banner"
+                            return (config.read(K.koreader.screensaver.container) or "banner") == "banner"
                         end,
                         callback = function()
-                            config.write("screensaver_message_container", "banner")
+                            config.write(K.koreader.screensaver.container, "banner")
                         end,
                     },
                     {
                         text = _("Box"),
                         radio = true,
                         checked_func = function()
-                            return config.read("screensaver_message_container") == "box"
+                            return config.read(K.koreader.screensaver.container) == "box"
                         end,
                         callback = function()
-                            config.write("screensaver_message_container", "box")
+                            config.write(K.koreader.screensaver.container, "box")
                         end,
                     },
                 },
@@ -267,7 +267,7 @@ local function buildMenuSleepScreenMessageOptions()
                     elseif mode == "highlight" then
                         label = _("Highlight Width")
                     elseif mode == "custom" then
-                        local v = G_reader_settings:readSetting(K.NAMESPACE .. "_message_custom_width")
+                        local v = config.read(K.screensaver_message.custom)
                         if type(v) == "number" then
                             label = _("Custom") .. " (" .. v .. ")"
                         else
@@ -285,7 +285,7 @@ local function buildMenuSleepScreenMessageOptions()
                             return getWidthMode() == "viewport"
                         end,
                         callback = function()
-                            G_reader_settings:saveSetting(K.NAMESPACE .. "_message_width_mode", "viewport")
+                            config.write(K.screensaver_message.width.mode, "viewport")
                         end,
                     },
                     {
@@ -295,7 +295,7 @@ local function buildMenuSleepScreenMessageOptions()
                             return getWidthMode() == "message_content"
                         end,
                         callback = function()
-                            G_reader_settings:saveSetting(K.NAMESPACE .. "_message_width_mode", "message_content")
+                            config.write(K.screensaver_message.width.mode, "message_content")
                         end,
                     },
                     {
@@ -305,12 +305,12 @@ local function buildMenuSleepScreenMessageOptions()
                             return getWidthMode() == "highlight"
                         end,
                         callback = function()
-                            G_reader_settings:saveSetting(K.NAMESPACE .. "_message_width_mode", "highlight")
+                            config.write(K.screensaver_message.width.mode, "highlight")
                         end,
                     },
                     {
                         text_func = function()
-                            local value = G_reader_settings:readSetting(K.NAMESPACE .. "_message_custom_width") or 50
+                            local value = config.read(K.NAMESPACE .. "message_custom_width") or 50
                             return _("Custom Width: ") .. value
                         end,
                         radio = true,
@@ -318,15 +318,15 @@ local function buildMenuSleepScreenMessageOptions()
                             return getWidthMode() == "custom"
                         end,
                         callback = function(touchmenu)
-                            G_reader_settings:saveSetting(K.NAMESPACE .. "_message_width_mode", "custom")
+                            config.write(K.screensaver_message.width.mode, "custom")
 
-                            local key = K.NAMESPACE .. "_message_custom_width"
-                            local value = G_reader_settings:readSetting(key)
+                            local key = K.NAMESPACE .. "message_custom_width"
+                            local value = config.read(key)
 
                             -- Ensure a persisted default exists
                             if type(value) ~= "number" then
                                 value = 50
-                                G_reader_settings:saveSetting(key, value)
+                                config.write(key, value)
                             end
 
                             Spin {
@@ -336,7 +336,7 @@ local function buildMenuSleepScreenMessageOptions()
                                 step = 10,
                                 default = 50,
                                 onApply = function(v)
-                                    G_reader_settings:saveSetting(key, v)
+                                    config.write(key, v)
                                     touchmenu:updateItems()
                                 end,
                             }

@@ -5,20 +5,134 @@ local K = require("core.keys")
 local M = {}
 
 M.defaults = {
-    [K.screensaver_message.layout.font_size] = 14,
-    [K.screensaver_message.layout.line_spacing] = 0.4,
-    [K.screensaver_message.layout.alignment] = "center",
+    ------------------------------------------------------------
+    -- Plugin-owned screensaver message settings
+    ------------------------------------------------------------
+    [K.screensaver_message.width.mode]   = "message_content",
+    [K.screensaver_message.width.custom_mode] = 50,
 
-    [K.screensaver_message.layout.padding] = 2,
-    [K.screensaver_message.layout.margin] = 4,
+    [K.screensaver_message.layout.font_size]   = 14,
+    [K.screensaver_message.layout.line_spacing] = 0.4,
+    [K.screensaver_message.layout.alignment]    = "center",
+    [K.screensaver_message.layout.padding]      = 2,
+    [K.screensaver_message.layout.margin]       = 4,
+
+    ------------------------------------------------------------
+    -- Highlight Layout (READER SETTINGS)
+    ------------------------------------------------------------
+    [K.highlights.alignment]      = "left",
+    [K.highlights.justified]      = false,
+    [K.highlights.line_height]    = 0.3,
+    [K.highlights.width_percent]  = 70,
+    [K.highlights.font_size_base] = 32,
+    [K.highlights.font_size_min]  = 12,
+    [K.highlights.border_spacing] = 24,
+
+    ------------------------------------------------------------
+    -- Notes (READER SETTINGS)
+    ------------------------------------------------------------
+    [K.notes.sync_with_highlights] = true,
+
+    [K.notes.alignment]      = "left",
+    [K.notes.justified]      = false,
+    [K.notes.line_height]    = 0.3,
+    [K.notes.width_percent]  = 70,
+    [K.notes.font_size_base] = 12,
+    [K.notes.font_size_min]  = 24,
+
+    [K.notes.option.mode] = "full",
+    [K.notes.option.limit] = 130,
+
+    ------------------------------------------------------------
+    -- Screensaver type & display
+    ------------------------------------------------------------
+    [K.display.orientation] = "default",
 }
 
-function M.read(key)
-    return G_reader_settings:readSetting(key, M.defaults[key])
+
+-- Hybrid read
+function M.read(key, default)
+    -- Check if the key belongs to KOReader defaults
+    local is_koreader_key = false
+    for _, section in pairs(K.koreader) do
+        if type(section) == "table" then   -- <-- add this check
+            for _, k in pairs(section) do
+                if k == key then
+                    is_koreader_key = true
+                    break
+                end
+            end
+        end
+        if is_koreader_key then
+            break
+        end
+    end
+
+
+    if is_koreader_key then
+        return G_reader_settings:readSetting(key, default or M.defaults[key])
+    else
+        return M.readPluginSetting(key, default or M.defaults[key])
+    end
 end
 
+-- Hybrid write
 function M.write(key, value)
-    G_reader_settings:saveSetting(key, value)
+    local is_koreader_key = false
+    for _, section in pairs(K.koreader) do
+        if type(section) == "table" then
+            for _, k in pairs(section) do
+                if k == key then is_koreader_key = true break end
+            end
+        elseif section == key then
+            is_koreader_key = true
+        end
+        if is_koreader_key then break end
+    end
+
+
+    if is_koreader_key then
+        G_reader_settings:saveSetting(key, value)
+    else
+        M.writePluginSetting(key, value)
+    end
+end
+
+function M.isTrue(key)
+    local val = M.read(key)  -- <-- uses your hybrid read
+    if type(val) == "boolean" then
+        return val
+    elseif type(val) == "string" then
+        return val:lower() == "true"
+    elseif type(val) == "number" then
+        return val ~= 0
+    else
+        return false
+    end
+end
+
+-- ===== NEW: Plugin-specific settings =====
+local DataStorage = require("datastorage")
+local LuaSettings = require("luasettings")
+
+-- Plugin-owned LuaSettings (KOReader-native)
+local SETTINGS_FILE = DataStorage:getDataDir() .. "/highlightsscreensaver.lua"
+
+local pluginSettings = LuaSettings:open(SETTINGS_FILE)
+
+-- Read a plugin-specific setting
+function M.readPluginSetting(key, default)
+    local value = pluginSettings:readSetting(key)
+    if value == nil then
+        return default
+    end
+    return value
+end
+
+-- Write a plugin-specific setting
+function M.writePluginSetting(key, value)
+    pluginSettings:saveSetting(key, value)
+    pluginSettings:flush()
 end
 
 function M.migrate()

@@ -1,5 +1,8 @@
 local _ = require("gettext")
 local Spin = require("widgets.generic_spin")
+local keys = require("core.keys")
+local config = require("core.config")
+
 
 -------------------------------------------------------------------------
 -- NOTES LAYOUT CONFIGURATION MENU
@@ -8,7 +11,7 @@ local Spin = require("widgets.generic_spin")
 local function buildMenuNotesLayoutOptions()
     -- Check if syncing with highlights is enabled
     local function isSyncEnabled()
-        return G_reader_settings:isTrue("ns_sync_with_highlights")
+        return config.isTrue(keys.notes.sync_with_highlights)
     end
 
     -- Helper to create editable menu items
@@ -19,10 +22,10 @@ local function buildMenuNotesLayoutOptions()
                 text = _("Text Alignment: Left"),
                 radio = true,
                 checked_func = function()
-                    return G_reader_settings:readSetting("ns_text_alignment") == "left"
+                    return config.read(keys.notes.alignment) == "left"
                 end,
                 callback = function()
-                    G_reader_settings:saveSetting("ns_text_alignment", "left")
+                    config.write(keys.notes.alignment, "left")
                 end,
                 enabled_func = function() return not isSyncEnabled() end,
             },
@@ -30,10 +33,10 @@ local function buildMenuNotesLayoutOptions()
                 text = _("Text Alignment: Center"),
                 radio = true,
                 checked_func = function()
-                    return G_reader_settings:readSetting("ns_text_alignment") == "center"
+                    return config.read(keys.notes.alignment) == "center"
                 end,
                 callback = function()
-                    G_reader_settings:saveSetting("ns_text_alignment", "center")
+                    config.write(keys.notes.alignment, "center")
                 end,
                 enabled_func = function() return not isSyncEnabled() end,
             },
@@ -42,10 +45,10 @@ local function buildMenuNotesLayoutOptions()
                 text = _("Text Alignment: Right"),
                 radio = true,
                 checked_func = function()
-                    return G_reader_settings:readSetting("ns_text_alignment") == "right"
+                    return config.read(keys.notes.alignment) == "right"
                 end,
                 callback = function()
-                    G_reader_settings:saveSetting("ns_text_alignment", "right")
+                    config.write(keys.notes.alignment, "right")
                 end,
                 enabled_func = function() return not isSyncEnabled() end,
             },
@@ -53,13 +56,13 @@ local function buildMenuNotesLayoutOptions()
             -- Justified toggle
             {
                 text_func = function()
-                    return _("Justified: ") .. (G_reader_settings:isTrue("ns_justified") and _("On") or _("Off"))
+                    return _("Justified: ") .. (config.isTrue(keys.notes.justified) and _("On") or _("Off"))
                 end,
                 keep_menu_open = true,
                 callback = function(touchmenu_instance)
-                    G_reader_settings:saveSetting(
-                        "ns_justified",
-                        not G_reader_settings:isTrue("ns_justified")
+                    config.write(
+                        keys.notes.justified,
+                        not config.isTrue(keys.notes.justified)
                     )
                     touchmenu_instance:updateItems()
                 end,
@@ -69,20 +72,20 @@ local function buildMenuNotesLayoutOptions()
             -- Line Height
             {
                 text_func = function()
-                    local lh_raw = G_reader_settings:readSetting("ns_line_height") or 100
+                    local lh_raw = config.read(keys.notes.line_height) or 100
                     return _("Line Height: ") .. string.format("%.2f", lh_raw / 100)
                 end,
                 keep_menu_open = true,
                 callback = function(touchmenu_instance)
                     Spin{
                         title = _("Line spacing"),
-                        value = G_reader_settings:readSetting("ns_line_height") or 100,
+                        value = config.read(keys.notes.line_height) or 100,
                         min = 0,
                         max = 160,
                         step = 5,
                         default = 50,
                         onApply = function(value)
-                            G_reader_settings:saveSetting("ns_line_height", value)
+                            config.write(keys.notes.line_height, value)
                             touchmenu_instance:updateItems()
                         end,
                     }
@@ -93,19 +96,19 @@ local function buildMenuNotesLayoutOptions()
             -- Base Font Size
             {
                 text_func = function()
-                    return _("Base Font Size: ") .. (G_reader_settings:readSetting("ns_font_size_base") or 48)
+                    return _("Base Font Size: ") .. (config.read(keys.notes.font_size_base) or 48)
                 end,
                 keep_menu_open = true,
                 callback = function(touchmenu_instance)
                     Spin{
                         title = _("Base Font Size"),
-                        value = G_reader_settings:readSetting("ns_font_size_base") or 48,
+                        value = config.read(keys.notes.font_size_base) or 48,
                         min = 24,
                         max = 72,
                         step = 2,
                         default = 48,
                         onApply = function(value)
-                            G_reader_settings:saveSetting("ns_font_size_base", value)
+                            config.write(keys.notes.font_size_base, value)
                             touchmenu_instance:updateItems()
                         end,
                     }
@@ -116,19 +119,19 @@ local function buildMenuNotesLayoutOptions()
             -- Minimum Font Size
             {
                 text_func = function()
-                    return _("Minimum Font Size: ") .. (G_reader_settings:readSetting("ns_font_size_min") or 12)
+                    return _("Minimum Font Size: ") .. (config.read(keys.notes.font_size_min) or 12)
                 end,
                 keep_menu_open = true,
                 callback = function(touchmenu_instance)
                     Spin{
                         title = _("Minimum Font Size"),
-                        value = G_reader_settings:readSetting("ns_font_size_min") or 12,
+                        value = config.read(keys.notes.font_size_min) or 12,
                         min = 8,
                         max = 24,
                         step = 1,
                         default = 12,
                         onApply = function(value)
-                            G_reader_settings:saveSetting("ns_font_size_min", value)
+                            config.write(keys.notes.font_size_min, value)
                             touchmenu_instance:updateItems()
                         end,
                     }
@@ -139,19 +142,19 @@ local function buildMenuNotesLayoutOptions()
             -- Note Width
             {
                 text_func = function()
-                    return _("Note Width %: ") .. (G_reader_settings:readSetting("ns_width_percent") or 90)
+                    return _("Note Width %: ") .. (config.read(keys.notes.width_percent) or 90)
                 end,
                 keep_menu_open = true,
                 callback = function(touchmenu_instance)
                     Spin{
                         title = _("Note Width Percentage"),
-                        value = G_reader_settings:readSetting("ns_width_percent") or 90,
+                        value = config.read(keys.notes.width_percent) or 90,
                         min = 60,
                         max = 95,
                         step = 1,
                         default = 90,
                         onApply = function(value)
-                            G_reader_settings:saveSetting("ns_width_percent", value)
+                            config.write(keys.notes.width_percent, value)
                             touchmenu_instance:updateItems()
                         end,
                     }
@@ -171,7 +174,7 @@ local function buildMenuNotesLayoutOptions()
                 end,
                 keep_menu_open = true,
                 callback = function(touchmenu_instance)
-                    G_reader_settings:saveSetting("ns_sync_with_highlights", not isSyncEnabled())
+                    config.write(keys.notes.sync_with_highlights, not isSyncEnabled())
                     touchmenu_instance:updateItems()
                 end,
             },
@@ -185,9 +188,9 @@ local function buildMenuNotesLayoutOptions()
                     for _, key in ipairs(keys) do
                         local hs_key = "hs_" .. key
                         local ns_key = "ns_" .. key
-                        local value = G_reader_settings:readSetting(hs_key)
+                        local value = config.read(hs_key)
                         if value ~= nil then
-                            G_reader_settings:saveSetting(ns_key, value)
+                            config.write(ns_key, value)
                         end
                     end
                     touchmenu_instance:updateItems()  -- refresh menu texts
