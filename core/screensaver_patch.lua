@@ -10,48 +10,74 @@ local scan = require("core.scan")
 local keys = require("core.keys")
 
 local HIGHLIGHTS_MODE = "highlights"
-local ORIENT_DEFAULT = "default"
+local ORIENT_DEFAULT  = "default"
 local ORIENT_PORTRAIT = "portrait"
 local ORIENT_LANDSCAPE = "landscape"
-local ROT_UPRIGHT = Screen.DEVICE_ROTATED_UPRIGHT or 0
-local ROT_LEFT    = Screen.DEVICE_ROTATED_LEFT or 1
+
+local ROT_UPRIGHT  = Screen.DEVICE_ROTATED_UPRIGHT or 0
+local ROT_LEFT     = Screen.DEVICE_ROTATED_LEFT or 1
 
 local function patchScreensaverShow()
-    local og_screensaver_show = Screensaver.show
+    local og_show = Screensaver.show
+
     Screensaver.show = function(self)
-        if self.screensaver_type == HIGHLIGHTS_MODE then
-            if self.screensaver_widget then
-                UIManager:close(self.screensaver_widget)
-                self.screensaver_widget = nil
-            end
-
-            Device.screen_saver_mode = true
-
-            local mode = config.read(keys.display.orientation) or ORIENT_DEFAULT
-            if mode == ORIENT_PORTRAIT then
-                Screen:setRotationMode(ROT_UPRIGHT)
-            elseif mode == ORIENT_LANDSCAPE then
-                Screen:setRotationMode(ROT_LEFT)
-            end
-
-            local last_scanned = config.getLastScannedDate()
-            local t = os.date("*t")
-            local today = string.format("%04d-%02d-%02d", t.year, t.month, t.day)
-            if not last_scanned or last_scanned < today then
-                scan.scanHighlights()
-            end
-
-            local clipping = clipper.getRandomClipping()
-            config.setLastShownHighlight(clipping:filename())
-
-            self.screensaver_widget = highlightsWidget.buildHighlightsScreensaverWidget(self.ui,clipping)
-            self.screensaver_widget.modal = true
-            self.screensaver_widget.dithered = true
-            UIManager:show(self.screensaver_widget, "full")
-            return
+        if self.screensaver_type ~= HIGHLIGHTS_MODE then
+            return og_show(self)
         end
 
-        og_screensaver_show(self)
+        -- Close any existing screensaver widget
+        if self.screensaver_widget then
+            UIManager:close(self.screensaver_widget)
+            self.screensaver_widget = nil
+        end
+
+        Device.screen_saver_mode = true
+
+        -- Save current rotation
+        local rotation_mode = Screen:getRotationMode()
+        Device.orig_rotation_mode = rotation_mode
+
+        -- Read our plugin-owned orientation
+        local mode = config.read(keys.display.orientation) or ORIENT_DEFAULT
+
+        -- Apply rotation only if needed
+        if mode == ORIENT_PORTRAIT then
+            if bit.band(rotation_mode, 1) == 1 then
+                -- only force portrait if current is landscape
+                Screen:setRotationMode(ROT_UPRIGHT)
+            else
+                Device.orig_rotation_mode = nil
+            end
+        elseif mode == ORIENT_LANDSCAPE then
+            if bit.band(rotation_mode, 1) == 0 then
+                -- only force landscape if current is portrait
+                Screen:setRotationMode(ROT_LEFT)
+            else
+                Device.orig_rotation_mode = nil
+            end
+        else
+            -- default/system: do nothing, follow current book
+            Device.orig_rotation_mode = nil
+        end
+
+        -- Highlight scanning logic
+        local last_scanned = config.getLastScannedDate()
+        local t = os.date("*t")
+        local today = string.format("%04d-%02d-%02d", t.year, t.month, t.day)
+        if not last_scanned or last_scanned < today then
+            scan.scanHighlights()
+        end
+
+        local clipping = clipper.getRandomClipping()
+        if clipping then
+            config.setLastShownHighlight(clipping:filename())
+        end
+
+        -- Build and show widget
+        self.screensaver_widget = highlightsWidget.buildHighlightsScreensaverWidget(self.ui, clipping)
+        self.screensaver_widget.modal = true
+        self.screensaver_widget.dithered = true
+        UIManager:show(self.screensaver_widget, "full")
     end
 end
 
