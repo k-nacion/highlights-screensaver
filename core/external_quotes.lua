@@ -4,8 +4,22 @@ local Logger = require("core.logger")
 local clipper = require("core.clipper")
 local UIManager = require("ui/uimanager")
 local InfoMessage = require("ui/widget/infomessage")
+local ffiUtil = require("ffi/util")  -- for SHA-1
+local sha = require("core.sha2")
 
 local M = {}
+
+-- Generate a deterministic hash for a quote
+local function generateQuoteHash(quote, author)
+    local normalized = quote:gsub("^%s*(.-)%s*$", "%1")
+    local key = normalized
+    if author then
+        key = key .. "~" .. author
+    end
+    local fullHash = sha.sha1(key)
+    local shortHash = fullHash:sub(1, 12)
+    return shortHash
+end
 
 -- trim helper (handles Windows/macOS/Linux weird filenames)
 local function trim(s)
@@ -49,12 +63,13 @@ function M.importQuotes(dir_path)
     Logger.info("[ExternalQuotes] Importing quotes from: " .. dir_path)
 
     local imported_count = 0
+    local skipped_count = 0
 
     for file in lfs.dir(dir_path) do
         local clean_file = trim(file)
 
         if clean_file ~= "." and clean_file ~= ".."
-            and clean_file:lower():match("%.txt$") then
+                and clean_file:lower():match("%.txt$") then
 
             Logger.info("[ExternalQuotes] scanning file: '" .. clean_file .. "'")
 
@@ -72,29 +87,38 @@ function M.importQuotes(dir_path)
                     local index = 1
                     for _, block in ipairs(quoteBlocks) do
                         local text, author = extractAuthor(block)
+                        local hashId = generateQuoteHash(text, author)
 
                         if text and text:match("%S") then
-                            local clipping = clipper.Clipping.new(
-                                text,
-                                nil,
-                                os.date("%Y-%m-%d %H:%M:%S"),
-                                baseTitle,
-                                author,
-                                true
-                            )
+                            -- Check if this quote already exists
+                            if not clipper.hasClipping(hashId) then
+                                local clipping = clipper.Clipping.new(
+                                        text,
+                                        hashId,
+                                        os.date("%Y-%m-%d %H:%M:%S"),
+                                        baseTitle,
+                                        author,
+                                        true
+                                )
+                                clipping.source_index = index
+                                index = index + 1
 
-                            -- CRITICAL: prevents overwrite
-                            clipping.source_index = index
-                            index = index + 1
+                                clipper.saveClipping(clipping)
+                                imported_count = imported_count + 1
 
-                            clipper.saveClipping(clipping)
-                            imported_count = imported_count + 1
-
-                            Logger.info(string.format(
-                                "[ExternalQuotes] Imported: %s (Author: %s)",
-                                text,
-                                author or "Unknown"
-                            ))
+                                Logger.info(string.format(
+                                        "[ExternalQuotes] Imported: %s (Author: %s)",
+                                        text,
+                                        author or "Unknown"
+                                ))
+                            else
+                                skipped_count = skipped_count + 1
+                                Logger.info(string.format(
+                                        "[ExternalQuotes] Skipped duplicate: %s (Author: %s)",
+                                        text,
+                                        author or "Unknown"
+                                ))
+                            end
                         end
                     end
                 end
@@ -104,9 +128,10 @@ function M.importQuotes(dir_path)
 
     UIManager:show(InfoMessage:new{
         text = string.format(
-            "Imported %d quote(s) from directory:\n%s",
-            imported_count,
-            dir_path
+                "Imported %d quote(s), skipped %d duplicates from directory:\n%s",
+                imported_count,
+                skipped_count,
+                dir_path
         ),
         timeout = 4,
     })

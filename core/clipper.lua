@@ -35,9 +35,11 @@ end
 ---@param self Clipping
 ---@return string
 function M.Clipping:filename()
-    local index_part = self.source_index and ("_" .. self.source_index) or ""
-    return utils.normalise(self.source_title .. " " .. self.created_at .. index_part .. ".json")
+	local index_part = self.source_index and ("_" .. self.source_index) or ""
+	local created = self.created_at or "unknown_date"
+	return utils.normalise(self.source_title .. " " .. created .. index_part .. ".json")
 end
+
 
 
 ---@param path string
@@ -140,6 +142,22 @@ function M.getRandomClipping()
 
 	local clipping = M.getClipping(chosenFile)
 	return clipping or fallback_clipping
+end
+
+---@param hashId string
+---@return boolean
+function M.hasClipping(hashId)
+	local dir = utils.getClippingsDir()
+	utils.makeDir(dir)
+	for file in lfs.dir(dir) do
+		if file:match("%.json$") then
+			local clipping = M.getClipping(file)
+			if clipping and clipping.note == hashId then
+				return true
+			end
+		end
+	end
+	return false
 end
 
 return M

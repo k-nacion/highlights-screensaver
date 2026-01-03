@@ -128,7 +128,7 @@ Happiness comes from your own actions.
 
 * [ ] **Manage scannable directories** – view, remove, edit
 * [ ] **Pause / pin a highlight** – display favorite quotes persistently
-* [ ] **Skip duplicates when importing** – avoid repeated quotes
+* [X] **Skip duplicates when importing** – avoid repeated quotes
 * [ ] **Highlight / quote sequencing** – Shuffle or Sequential display
 * [x] **Screensaver message menu** – dynamic control of message content, layout, and placement
 
