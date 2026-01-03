@@ -11,6 +11,7 @@ local M = {}
 ---@field source_title string
 ---@field source_author string|nil
 ---@field enabled boolean
+---@field hash_value string|nil  -- NEW
 M.Clipping = {}
 M.Clipping.__index = M.Clipping
 
@@ -21,7 +22,7 @@ M.Clipping.__index = M.Clipping
 ---@param source_author string|nil
 ---@param enabled boolean
 ---@return Clipping
-function M.Clipping.new(text, note, created_at, source_title, source_author, enabled)
+function M.Clipping.new(text, note, created_at, source_title, source_author, enabled, hash_value)
 	local self = setmetatable({}, M.Clipping)
 	self.text = text
 	self.note = note
@@ -29,8 +30,10 @@ function M.Clipping.new(text, note, created_at, source_title, source_author, ena
 	self.source_title = source_title
 	self.source_author = source_author
 	self.enabled = enabled
+	self.hash_value = hash_value  -- now works
 	return self
 end
+
 
 ---@param self Clipping
 ---@return string
@@ -100,7 +103,15 @@ function M.getClipping(filename)
 	local content = f:read("*a")
 	f:close()
 	local data = json.decode(content)
-	return M.Clipping.new(data.text, data.note, data.created_at, data.source_title, data.source_author, data.enabled)
+	return M.Clipping.new(
+			data.text,
+			data.note,
+			data.created_at,
+			data.source_title,
+			data.source_author,
+			data.enabled,
+			data.hash_value   -- restore the SHA here
+	)
 end
 
 ---@return Clipping
@@ -152,7 +163,7 @@ function M.hasClipping(hashId)
 	for file in lfs.dir(dir) do
 		if file:match("%.json$") then
 			local clipping = M.getClipping(file)
-			if clipping and clipping.note == hashId then
+			if clipping and clipping.hash_value == hashId then
 				return true
 			end
 		end

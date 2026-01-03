@@ -94,11 +94,12 @@ function M.importQuotes(dir_path)
                             if not clipper.hasClipping(hashId) then
                                 local clipping = clipper.Clipping.new(
                                         text,
-                                        hashId,
+                                        nil,
                                         os.date("%Y-%m-%d %H:%M:%S"),
                                         baseTitle,
                                         author,
-                                        true
+                                        true,
+                                        hashId
                                 )
                                 clipping.source_index = index
                                 index = index + 1
