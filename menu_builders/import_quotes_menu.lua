@@ -8,10 +8,10 @@ local function buildMenuImportExternalQuotes()
         text_func = function()
             local dir = config.getExternalQuotesDirectory()
             if not dir then
-                return _("Import external quotes")
+                return _("Import External Quotes")
             end
             local folder_name = dir:match("([^/]+)$") or dir
-            return _("External Quotes Location") .. ": " .. folder_name
+            return _("Reimport Quotes") .. ": " .. folder_name
         end,
         callback = function()
              DirectoryPicker.pickDirectory(function(dir_path)
