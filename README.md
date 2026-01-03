@@ -95,16 +95,14 @@ All options are available under:
 
 ### How It Works
 
-1. Create a directory for quote files
-2. Add one or more `*.txt` files
-
-   * Each file represents a collection of quotes
-3. All quote files must be in the same folder
+1. Create a directory for your quote files.
+2. Add one or more `*.txt` files—each file represents a collection of quotes.
+3. Make sure all quote files are in the **same folder**.
 
 ### File Format
 
-* Each quote is separated by `======`
-* Use `~` to indicate the author or source
+* Each quote is separated by `======`.
+* Use `~` to indicate the author or source (optional).
 
 ```txt
 ======
@@ -115,14 +113,15 @@ Happiness comes from your own actions.
 ~ Dalai Lama
 ```
 
-### Importing
+> ⚠️ The `~` author/source is optional. If omitted, the quote will still be imported.
 
-1. Go to `Screen → Sleep screen → Highlights screensaver`
-2. Select **“Import external quotes”**
-3. Choose the folder containing your quote files
+### Importing Quotes
 
-> ⚠️ Note: This feature works but is still being refined in future updates.
+1. Navigate to:
+   `Screen → Sleep Screen → Highlights Screensaver → Content → Import External Quote`
+2. Select the folder containing your quote files.
 
+> ⚠️ Note: This feature is fully functional but still being refined in future updates.
 ---
 
 ## Roadmap / Planned Features
