@@ -77,4 +77,12 @@ K.display = {
     orientation = "highlights_orientation",
 }
 
+------------------------------------------------------------
+-- Directory Picker (PLUGIN)
+------------------------------------------------------------
+K.directory_picker = {
+    last_path = "directory_picker_last_path",
+}
+
+
 return K

@@ -14,7 +14,7 @@ local function buildMenuImportExternalQuotes()
             return _("External Quotes Location") .. ": " .. folder_name
         end,
         callback = function()
-             DirectoryPicker.pickDirectory("highlightsscreensaver", function(dir_path)
+             DirectoryPicker.pickDirectory(function(dir_path)
 				config.setExternalQuotesDirectory(dir_path) -- save last folder
 				local externalQuotes = require("core.external_quotes")
 				externalQuotes.importQuotes(dir_path)
